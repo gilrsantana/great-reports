@@ -1,0 +1,8 @@
+@import "tailwindcss";
+
+@theme {
+  --color-bg-primary: #111827;
+  --color-bg-secondary: #1f2937;
+  --color-accent-brand: #4f46e5;
+  --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}

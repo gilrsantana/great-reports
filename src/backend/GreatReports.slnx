@@ -1,0 +1,9 @@
+<Solution>
+  <Project Path="../../tests/GreatReports.IntegrationTests/GreatReports.IntegrationTests.csproj" />
+  <Project Path="../../tests/GreatReports.UnitTests/GreatReports.UnitTests.csproj" />
+  <Project Path="GreatReports.Application/GreatReports.Application.csproj" />
+  <Project Path="GreatReports.Domain/GreatReports.Domain.csproj" />
+  <Project Path="GreatReports.Infrastructure/GreatReports.Infrastructure.csproj" />
+  <Project Path="GreatReports.Presentation/GreatReports.Presentation.csproj" />
+  <Project Path="GreatReports.Shared/GreatReports.Shared.csproj" />
+</Solution>

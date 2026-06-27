@@ -1,0 +1,6 @@
+@great_reports.Presentation_HostAddress = http://localhost:5147
+
+GET {{great_reports.Presentation_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
