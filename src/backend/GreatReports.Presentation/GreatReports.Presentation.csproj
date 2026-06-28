@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <ItemGroup>
     <ProjectReference Include="..\GreatReports.Infrastructure\GreatReports.Infrastructure.csproj" />
@@ -19,6 +19,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <RootNamespace>GreatReports.Presentation</RootNamespace>
+    <UserSecretsId>eba00d78-5687-4eb9-90b4-1f2cb3e73831</UserSecretsId>
   </PropertyGroup>
 
 </Project>
