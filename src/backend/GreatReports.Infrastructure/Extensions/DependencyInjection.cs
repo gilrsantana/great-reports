@@ -42,11 +42,11 @@ public static class DependencyInjection
 
     private static IServiceCollection ConfigureOptions(this IServiceCollection services, IConfiguration configuration)
     {
-        services.Configure<DatabaseOptions>(configuration.GetSection(DatabaseOptions.SectionName));
-        services.Configure<JwtSettings>(configuration.GetSection(JwtSettings.SectionName));
-        services.Configure<IdentityOptions>(configuration.GetSection("IdentityOptions"));
-        services.Configure<DataProtectionTokenProviderOptions>(configuration.GetSection("DataProtectionTokenProviderOptions"));
-        return services;
+        return services
+            .Configure<DatabaseOptions>(configuration.GetSection(DatabaseOptions.SectionName))
+            .Configure<JwtSettings>(configuration.GetSection(JwtSettings.SectionName))
+            .Configure<IdentityOptions>(configuration.GetSection("IdentityOptions"))
+            .Configure<DataProtectionTokenProviderOptions>(configuration.GetSection("DataProtectionTokenProviderOptions"));
     }
 
     private static IServiceCollection SetupDatabase(
@@ -138,7 +138,7 @@ public static class DependencyInjection
 
     private static IServiceCollection SetHangfire(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddHangfire((serviceProvider, config) =>
+        services.AddHangfire((config) =>
         {
             var connectionString = configuration.GetConnectionString("DefaultConnection")
                 ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
