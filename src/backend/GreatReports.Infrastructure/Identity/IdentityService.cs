@@ -90,6 +90,16 @@ public class IdentityService : IIdentityService
         return result.Succeeded;
     }
 
+    public async Task<bool> ConfirmEmailAsync(Guid accountId)
+    {
+        var account = await _userManager.FindByIdAsync(accountId.ToString());
+        if (account == null) return false;
+
+        account.EmailConfirmed = true;
+        var result = await _userManager.UpdateAsync(account);
+        return result.Succeeded;
+    }
+
     private string GenerateAccessToken(Guid accountId, string email, IEnumerable<string> roles)
     {
         var claims = new List<Claim>

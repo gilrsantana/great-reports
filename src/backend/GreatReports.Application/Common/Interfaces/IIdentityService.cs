@@ -6,4 +6,5 @@ public interface IIdentityService
     Task<(string AccessToken, string RefreshToken)?> RotateTokensAsync(string accessToken, string refreshToken);
     Task<bool> CreateUserAsync(Guid id, string email, string password, IEnumerable<string> roles);
     Task<bool> UpdateLockoutStatusAsync(Guid accountId, bool blocked);
+    Task<bool> ConfirmEmailAsync(Guid accountId);
 }

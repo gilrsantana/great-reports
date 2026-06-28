@@ -4,6 +4,8 @@ using GreatReports.Application.Common.Interfaces;
 using GreatReports.Infrastructure.Configurations;
 using GreatReports.Infrastructure.Identity;
 using GreatReports.Infrastructure.Persistence;
+using GreatReports.Infrastructure.Persistence.Repositories;
+using GreatReports.Infrastructure.Mailer;
 using Hangfire;
 using Hangfire.MySql;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -31,6 +33,14 @@ public static class DependencyInjection
             .AddDefaultTokenProviders();
 
         services.AddScoped<IIdentityService, IdentityService>();
+        services.AddScoped<IProviderCompanyRepository, ProviderCompanyRepository>();
+        services.AddScoped<IClientCompanyRepository, ClientCompanyRepository>();
+        services.AddScoped<IProjectRepository, ProjectRepository>();
+        services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<IGroupRepository, GroupRepository>();
+        services.AddScoped<IDailyActivityRepository, DailyActivityRepository>();
+        services.AddScoped<IClientContactRepository, ClientContactRepository>();
+        services.AddScoped<IEmailVerificationService, EmailVerificationService>();
 
         services
             .SetAuthentication()

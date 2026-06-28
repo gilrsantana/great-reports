@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace GreatReports.Infrastructure.Persistence.Repositories;
 
-public class BaseEntityRepository<TEntity> : IUnitOfWork
+public class BaseEntityRepository<TEntity> : IRepository<TEntity>
     where TEntity : BaseEntity
 {
     protected readonly GreatReportsDbContext DbContext;
