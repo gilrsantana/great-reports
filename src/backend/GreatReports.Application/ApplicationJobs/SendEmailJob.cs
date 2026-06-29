@@ -2,17 +2,10 @@ using GreatReports.Application.Common.Interfaces;
 
 namespace GreatReports.Application.ApplicationJobs;
 
-public class SendEmailJob
+public class SendEmailJob(IEmailSender emailSender)
 {
-    private readonly IEmailSender _emailSender;
-
-    public SendEmailJob(IEmailSender emailSender)
+    public Task ExecuteAsync(string recipient, string subject, string body, CancellationToken cancellationToken)
     {
-        _emailSender = emailSender;
-    }
-
-    public async Task ExecuteAsync(string recipient, string subject, string body, CancellationToken cancellationToken)
-    {
-        await _emailSender.SendEmailAsync(recipient, subject, body, cancellationToken);
+        return emailSender.SendEmailAsync(recipient, subject, body, cancellationToken);
     }
 }

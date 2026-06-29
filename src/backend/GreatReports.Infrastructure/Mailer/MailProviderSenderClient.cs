@@ -4,16 +4,10 @@ using GreatReports.Infrastructure.Configurations;
 
 namespace GreatReports.Infrastructure.Mailer;
 
-public class MailProviderSenderClient
+public class MailProviderSenderClient(HttpClient httpClient, IOptions<MailProviderSettings> settings)
 {
-    public HttpClient HttpClient { get; }
-    private readonly MailProviderSettings _settings;
-
-    public MailProviderSenderClient(HttpClient httpClient, IOptions<MailProviderSettings> settings)
-    {
-        HttpClient = httpClient;
-        _settings = settings.Value;
-    }
+    public HttpClient HttpClient { get; } = httpClient;
+    private readonly MailProviderSettings _settings = settings.Value;
 
     public async Task<HttpResponseMessage> SendEmailAsync(string recipient, string subject, string body, CancellationToken cancellationToken = default)
     {
@@ -21,7 +15,7 @@ public class MailProviderSenderClient
         {
             from = $"no-reply@{_settings.Domain}",
             to = recipient,
-            subject = subject,
+            subject,
             html = body
         };
 

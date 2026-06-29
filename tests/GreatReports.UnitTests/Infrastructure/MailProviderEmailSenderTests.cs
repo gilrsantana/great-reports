@@ -44,9 +44,9 @@ public class MailProviderEmailSenderTests
     public async Task SendEmailAsync_ShouldReturnSuccess_WhenHttpCallSucceeds()
     {
         // Arrange
-        var recipient = "recipient@example.com";
-        var subject = "Hello World";
-        var body = "This is a test email body";
+        const string recipient = "recipient@example.com";
+        const string subject = "Hello World";
+        const string body = "This is a test email body";
 
         _httpMessageHandlerMock
             .Protected()
@@ -73,15 +73,15 @@ public class MailProviderEmailSenderTests
 
         // Assert
         Assert.True(result.IsSuccess);
-        
+
         _auditLogRepositoryMock.Verify(
-            x => x.AddAsync(It.Is<EmailAuditLog>(log => 
-                log.Recipient == recipient && 
-                log.Subject == subject && 
-                log.Body == body && 
-                log.Success == true && 
-                log.ErrorMessage == null), 
-                It.IsAny<CancellationToken>()), 
+            x => x.AddAsync(It.Is<EmailAuditLog>(log =>
+                log.Recipient == recipient &&
+                log.Subject == subject &&
+                log.Body == body &&
+                log.Success &&
+                log.ErrorMessage == null),
+                It.IsAny<CancellationToken>()),
             Times.Once);
 
         _auditLogRepositoryMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
@@ -91,9 +91,9 @@ public class MailProviderEmailSenderTests
     public async Task SendEmailAsync_ShouldReturnFailure_WhenHttpCallFails()
     {
         // Arrange
-        var recipient = "recipient@example.com";
-        var subject = "Hello World";
-        var body = "This is a test email body";
+        const string recipient = "recipient@example.com";
+        const string subject = "Hello World";
+        const string body = "This is a test email body";
 
         _httpMessageHandlerMock
             .Protected()
@@ -124,13 +124,13 @@ public class MailProviderEmailSenderTests
         Assert.Contains("HTTP 400", result.Error.Description);
 
         _auditLogRepositoryMock.Verify(
-            x => x.AddAsync(It.Is<EmailAuditLog>(log => 
-                log.Recipient == recipient && 
-                log.Subject == subject && 
-                log.Body == body && 
-                log.Success == false && 
-                log.ErrorMessage != null), 
-                It.IsAny<CancellationToken>()), 
+            x => x.AddAsync(It.Is<EmailAuditLog>(log =>
+                log.Recipient == recipient &&
+                log.Subject == subject &&
+                log.Body == body &&
+                !log.Success &&
+                log.ErrorMessage != null),
+                It.IsAny<CancellationToken>()),
             Times.Once);
 
         _auditLogRepositoryMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
@@ -140,9 +140,9 @@ public class MailProviderEmailSenderTests
     public async Task SendEmailAsync_ShouldReturnFailure_WhenRecipientIsInvalid()
     {
         // Arrange
-        var recipient = "invalid-email";
-        var subject = "Hello World";
-        var body = "This is a test email body";
+        const string recipient = "invalid-email";
+        const string subject = "Hello World";
+        const string body = "This is a test email body";
 
         // Act
         var result = await _emailSender.SendEmailAsync(recipient, subject, body);
@@ -160,9 +160,9 @@ public class MailProviderEmailSenderTests
     public async Task SendEmailAsync_ShouldLogFailure_WhenHttpCallThrowsException()
     {
         // Arrange
-        var recipient = "recipient@example.com";
-        var subject = "Hello World";
-        var body = "This is a test email body";
+        const string recipient = "recipient@example.com";
+        const string subject = "Hello World";
+        const string body = "This is a test email body";
 
         _httpMessageHandlerMock
             .Protected()
@@ -188,13 +188,13 @@ public class MailProviderEmailSenderTests
         Assert.Contains("Network failure", result.Error.Description);
 
         _auditLogRepositoryMock.Verify(
-            x => x.AddAsync(It.Is<EmailAuditLog>(log => 
-                log.Recipient == recipient && 
-                log.Subject == subject && 
-                log.Body == body && 
-                log.Success == false && 
-                log.ErrorMessage == "Network failure"), 
-                It.IsAny<CancellationToken>()), 
+            x => x.AddAsync(It.Is<EmailAuditLog>(log =>
+                log.Recipient == recipient &&
+                log.Subject == subject &&
+                log.Body == body &&
+                !log.Success &&
+                log.ErrorMessage == "Network failure"),
+                It.IsAny<CancellationToken>()),
             Times.Once);
 
         _auditLogRepositoryMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);

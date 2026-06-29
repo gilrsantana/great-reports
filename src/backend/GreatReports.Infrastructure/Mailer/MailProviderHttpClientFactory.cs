@@ -2,22 +2,15 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace GreatReports.Infrastructure.Mailer;
 
-public class MailProviderHttpClientFactory : IMailProviderHttpClientFactory
+public class MailProviderHttpClientFactory(IServiceProvider serviceProvider) : IMailProviderHttpClientFactory
 {
-    private readonly IServiceProvider _serviceProvider;
-
-    public MailProviderHttpClientFactory(IServiceProvider serviceProvider)
-    {
-        _serviceProvider = serviceProvider;
-    }
-
     public MailProviderManagerClient CreateManagerClient()
     {
-        return _serviceProvider.GetRequiredService<MailProviderManagerClient>();
+        return serviceProvider.GetRequiredService<MailProviderManagerClient>();
     }
 
     public MailProviderSenderClient CreateSenderClient()
     {
-        return _serviceProvider.GetRequiredService<MailProviderSenderClient>();
+        return serviceProvider.GetRequiredService<MailProviderSenderClient>();
     }
 }

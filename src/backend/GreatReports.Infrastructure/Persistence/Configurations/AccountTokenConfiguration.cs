@@ -8,6 +8,6 @@ public class AccountTokenConfiguration : IEntityTypeConfiguration<IdentityUserTo
 {
     public void Configure(EntityTypeBuilder<IdentityUserToken<Guid>> builder)
     {
-        builder.ToTable("AccountTokens");
+        builder.ToTable("IdentityUserTokens");
     }
 }

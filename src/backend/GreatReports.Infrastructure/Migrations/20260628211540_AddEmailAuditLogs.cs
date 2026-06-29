@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -26,10 +26,7 @@ namespace GreatReports.Infrastructure.Migrations
                     Active = table.Column<bool>(type: "tinyint(1)", nullable: false),
                     UnActivateDate = table.Column<DateTime>(type: "datetime(6)", nullable: true)
                 },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_EmailAuditLogs", x => x.Id);
-                })
+                constraints: table => table.PrimaryKey("PK_EmailAuditLogs", x => x.Id))
                 .Annotation("MySQL:Charset", "utf8mb4");
         }
 

@@ -4,15 +4,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace GreatReports.Infrastructure.Persistence.Repositories;
 
-public class ClientContactRepository : BaseEntityRepository<ClientContact>, IClientContactRepository
+public class ClientContactRepository(GreatReportsDbContext dbContext) : BaseEntityRepository<ClientContact>(dbContext), IClientContactRepository
 {
-    public ClientContactRepository(GreatReportsDbContext dbContext) : base(dbContext)
+    public Task<ClientContact?> GetByEmailAsync(string email, CancellationToken cancellationToken = default)
     {
-    }
-
-    public async Task<ClientContact?> GetByEmailAsync(string email, CancellationToken cancellationToken = default)
-    {
-        return await DbContext.Set<ClientContact>()
+        return DbContext.Set<ClientContact>()
             .FirstOrDefaultAsync(c => c.Email == email && c.Active, cancellationToken);
     }
 

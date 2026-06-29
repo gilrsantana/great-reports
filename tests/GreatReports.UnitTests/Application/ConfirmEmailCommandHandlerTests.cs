@@ -78,7 +78,7 @@ public class ConfirmEmailCommandHandlerTests
     {
         // Arrange
         var user = User.Create(Guid.NewGuid(), "João Silva", "test@email.com").Value;
-        var token = "valid-token";
+        const string token = "valid-token";
 
         _userRepositoryMock
             .Setup(x => x.GetByEmailAsync("test@email.com", It.IsAny<CancellationToken>()))
@@ -134,7 +134,7 @@ public class ConfirmEmailCommandHandlerTests
     {
         // Arrange
         var contact = ClientContact.Create(Guid.NewGuid(), "Maria", "maria@email.com", ContactType.Commercial).Value;
-        var token = "valid-token";
+        const string token = "valid-token";
 
         _userRepositoryMock
             .Setup(x => x.GetByEmailAsync("maria@email.com", It.IsAny<CancellationToken>()))

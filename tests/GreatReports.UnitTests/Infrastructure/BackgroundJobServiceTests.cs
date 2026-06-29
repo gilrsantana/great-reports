@@ -23,7 +23,7 @@ public class BackgroundJobServiceTests
     {
         // Arrange
         Expression<Func<TestJob, Task>> methodCall = x => x.RunAsync();
-        
+
         _backgroundJobClientMock
             .Setup(x => x.Create(
                 It.Is<Job>(job => job.Method.Name == nameof(TestJob.RunAsync)),
@@ -93,7 +93,7 @@ public class BackgroundJobServiceTests
     public void AddOrUpdate_ShouldCallRecurringJobManager_AddOrUpdate()
     {
         // Arrange
-        var jobId = "test-job";
+        const string jobId = "test-job";
         Expression<Func<TestJob, Task>> methodCall = x => x.RunAsync();
         var cronExpression = Cron.Minutely();
 
@@ -111,6 +111,7 @@ public class BackgroundJobServiceTests
 
     public class TestJob
     {
-        public Task RunAsync() => Task.CompletedTask;
+        private readonly int _dummy = 0;
+        public Task RunAsync() => Task.FromResult(_dummy);
     }
 }

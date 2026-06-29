@@ -10,38 +10,26 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace GreatReports.Infrastructure.Identity;
 
-public class IdentityService : IIdentityService
+public class IdentityService(
+    UserManager<Account> userManager,
+    RoleManager<Role> roleManager,
+    IOptions<JwtSettings> jwtSettings,
+    IEmailSender<Account> emailSender,
+    IOptions<ClientSettings> clientSettings) : IIdentityService
 {
-    private readonly UserManager<Account> _userManager;
-    private readonly RoleManager<Role> _roleManager;
-    private readonly JwtSettings _jwtSettings;
-    private readonly IEmailSender<Account> _emailSender;
-    private readonly ClientSettings _clientSettings;
-
-    public IdentityService(
-        UserManager<Account> userManager,
-        RoleManager<Role> roleManager,
-        IOptions<JwtSettings> jwtSettings,
-        IEmailSender<Account> emailSender,
-        IOptions<ClientSettings> clientSettings)
-    {
-        _userManager = userManager;
-        _roleManager = roleManager;
-        _jwtSettings = jwtSettings.Value;
-        _emailSender = emailSender;
-        _clientSettings = clientSettings.Value;
-    }
+    private readonly JwtSettings _jwtSettings = jwtSettings.Value;
+    private readonly ClientSettings _clientSettings = clientSettings.Value;
 
     public async Task<(string AccessToken, string RefreshToken)?> GenerateTokensAsync(Guid accountId, string email, IEnumerable<string> roles)
     {
-        var account = await _userManager.FindByIdAsync(accountId.ToString());
+        var account = await userManager.FindByIdAsync(accountId.ToString());
         if (account == null) return null;
 
         var accessToken = GenerateAccessToken(accountId, email, roles);
         var refreshToken = GenerateRefreshToken();
 
         account.UpdateRefreshToken(refreshToken, DateTime.UtcNow.AddDays(_jwtSettings.RefreshTokenExpireInDays));
-        await _userManager.UpdateAsync(account);
+        await userManager.UpdateAsync(account);
 
         return (accessToken, refreshToken);
     }
@@ -52,18 +40,18 @@ public class IdentityService : IIdentityService
         var emailClaim = principal.FindFirst(ClaimTypes.Email) ?? principal.FindFirst(JwtRegisteredClaimNames.Email);
         if (emailClaim == null) return null;
 
-        var account = await _userManager.FindByEmailAsync(emailClaim.Value);
+        var account = await userManager.FindByEmailAsync(emailClaim.Value);
         if (account == null || account.RefreshToken != refreshToken || account.RefreshTokenExpiryTime <= DateTime.UtcNow)
         {
             return null;
         }
 
-        var roles = await _userManager.GetRolesAsync(account);
+        var roles = await userManager.GetRolesAsync(account);
         var newAccessToken = GenerateAccessToken(account.Id, account.Email!, roles);
         var newRefreshToken = GenerateRefreshToken();
 
         account.UpdateRefreshToken(newRefreshToken, DateTime.UtcNow.AddDays(_jwtSettings.RefreshTokenExpireInDays));
-        await _userManager.UpdateAsync(account);
+        await userManager.UpdateAsync(account);
 
         return (newAccessToken, newRefreshToken);
     }
@@ -71,42 +59,42 @@ public class IdentityService : IIdentityService
     public async Task<bool> CreateUserAsync(Guid id, string email, string password, IEnumerable<string> roles)
     {
         var account = Account.Create(id, email);
-        var result = await _userManager.CreateAsync(account, password);
+        var result = await userManager.CreateAsync(account, password);
         if (!result.Succeeded) return false;
 
         foreach (var roleName in roles)
         {
-            if (!await _roleManager.RoleExistsAsync(roleName))
+            if (!await roleManager.RoleExistsAsync(roleName))
             {
-                await _roleManager.CreateAsync(Role.Create(roleName, $"{roleName} role"));
+                await roleManager.CreateAsync(Role.Create(roleName, $"{roleName} role"));
             }
-            await _userManager.AddToRoleAsync(account, roleName);
+            await userManager.AddToRoleAsync(account, roleName);
         }
 
-        var token = await _userManager.GenerateEmailConfirmationTokenAsync(account);
+        var token = await userManager.GenerateEmailConfirmationTokenAsync(account);
         var baseUrl = _clientSettings.BaseUrl.TrimEnd('/');
         var link = $"{baseUrl}/confirm-email?email={Uri.EscapeDataString(email)}&token={Uri.EscapeDataString(token)}";
-        await _emailSender.SendConfirmationLinkAsync(account, email, link);
+        await emailSender.SendConfirmationLinkAsync(account, email, link);
 
         return true;
     }
 
     public async Task<bool> UpdateLockoutStatusAsync(Guid accountId, bool blocked)
     {
-        var account = await _userManager.FindByIdAsync(accountId.ToString());
+        var account = await userManager.FindByIdAsync(accountId.ToString());
         if (account == null) return false;
 
         account.UpdateLockoutStatus(blocked);
-        var result = await _userManager.UpdateAsync(account);
+        var result = await userManager.UpdateAsync(account);
         return result.Succeeded;
     }
 
     public async Task<bool> ConfirmEmailAsync(Guid accountId, string token)
     {
-        var account = await _userManager.FindByIdAsync(accountId.ToString());
+        var account = await userManager.FindByIdAsync(accountId.ToString());
         if (account == null) return false;
 
-        var result = await _userManager.ConfirmEmailAsync(account, token);
+        var result = await userManager.ConfirmEmailAsync(account, token);
         return result.Succeeded;
     }
 

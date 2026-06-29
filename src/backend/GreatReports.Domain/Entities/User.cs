@@ -3,13 +3,14 @@ using System.Text.RegularExpressions;
 
 namespace GreatReports.Domain.Entities;
 
-public class User : BaseEntity
+public sealed partial class User : BaseEntity
 {
-    private static readonly Regex EmailRegex = new(@"^[^@\s]+@[^@\s]+\.[^@\s]+$", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+    [GeneratedRegex(@"^[^@\s]+@[^@\s]+\.[^@\s]+$", RegexOptions.IgnoreCase)]
+    private static partial Regex EmailRegex();
 
-    public Guid ProviderCompanyId { get; private set; }
-    public string DisplayName { get; private set; } = string.Empty;
-    public string Email { get; private set; } = string.Empty;
+    public Guid ProviderCompanyId { get; }
+    public string DisplayName { get; } = string.Empty;
+    public string Email { get; } = string.Empty;
     public bool EmailConfirmed { get; private set; }
 
     // EF Core constructor
@@ -42,7 +43,7 @@ public class User : BaseEntity
             return Result.Failure<User>(new Error("User.InvalidEmail", "O e-mail do usuário é obrigatório."));
         }
 
-        if (!EmailRegex.IsMatch(email))
+        if (!EmailRegex().IsMatch(email))
         {
             return Result.Failure<User>(new Error("User.InvalidEmailFormat", "O e-mail fornecido está em um formato inválido."));
         }

@@ -54,8 +54,8 @@ public class UserTests
     {
         // Arrange
         var providerId = Guid.NewGuid();
-        var email = "joao.silva@provedor.com";
-        var name = "João Silva";
+        const string email = "joao.silva@provedor.com";
+        const string name = "João Silva";
 
         // Act
         var result = User.Create(providerId, name, email);

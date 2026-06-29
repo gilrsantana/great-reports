@@ -6,19 +6,8 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace GreatReports.Presentation.Filters;
 
-public class HangfireDashboardAuthorizationFilter : IDashboardAuthorizationFilter
+public class HangfireDashboardAuthorizationFilter(string jwtSecret, string issuer, string audience) : IDashboardAuthorizationFilter
 {
-    private readonly string _jwtSecret;
-    private readonly string _issuer;
-    private readonly string _audience;
-
-    public HangfireDashboardAuthorizationFilter(string jwtSecret, string issuer, string audience)
-    {
-        _jwtSecret = jwtSecret;
-        _issuer = issuer;
-        _audience = audience;
-    }
-
     public bool Authorize(DashboardContext context)
     {
         var httpContext = context.GetHttpContext();
@@ -44,9 +33,9 @@ public class HangfireDashboardAuthorizationFilter : IDashboardAuthorizationFilte
                 ValidateAudience = true,
                 ValidateLifetime = true,
                 ValidateIssuerSigningKey = true,
-                ValidIssuer = _issuer,
-                ValidAudience = _audience,
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSecret)),
+                ValidIssuer = issuer,
+                ValidAudience = audience,
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecret)),
                 ClockSkew = TimeSpan.Zero,
                 RoleClaimType = ClaimTypes.Role
             };

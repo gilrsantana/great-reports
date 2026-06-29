@@ -54,9 +54,9 @@ public class ClientContactTests
     {
         // Arrange
         var clientCompanyId = Guid.NewGuid();
-        var name = "Maria Souza";
-        var email = "maria@provedor.com";
-        var type = ContactType.Commercial;
+        const string name = "Maria Souza";
+        const string email = "maria@provedor.com";
+        const ContactType type = ContactType.Commercial;
 
         // Act
         var result = ClientContact.Create(clientCompanyId, name, email, type);

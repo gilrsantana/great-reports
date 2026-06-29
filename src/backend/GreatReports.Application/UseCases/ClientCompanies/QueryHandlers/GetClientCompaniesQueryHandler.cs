@@ -6,15 +6,8 @@ using GreatReports.Shared;
 
 namespace GreatReports.Application.UseCases.ClientCompanies.QueryHandlers;
 
-public class GetClientCompaniesQueryHandler : IQueryHandler<GetClientCompaniesQuery, PagedResponse<ClientCompanyDto>>
+public class GetClientCompaniesQueryHandler(IClientCompanyRepository clientCompanyRepository) : IQueryHandler<GetClientCompaniesQuery, PagedResponse<ClientCompanyDto>>
 {
-    private readonly IClientCompanyRepository _clientCompanyRepository;
-
-    public GetClientCompaniesQueryHandler(IClientCompanyRepository clientCompanyRepository)
-    {
-        _clientCompanyRepository = clientCompanyRepository;
-    }
-
     public async Task<Result<PagedResponse<ClientCompanyDto>>> HandleAsync(GetClientCompaniesQuery query, CancellationToken cancellationToken = default)
     {
         if (query.Page <= 0)
@@ -27,7 +20,7 @@ public class GetClientCompaniesQueryHandler : IQueryHandler<GetClientCompaniesQu
             return Result.Failure<PagedResponse<ClientCompanyDto>>(new Error("Query.InvalidPageSize", "O tamanho da página deve ser maior que zero."));
         }
 
-        var (items, totalCount) = await _clientCompanyRepository.GetPagedByProviderIdAsync(
+        var (items, totalCount) = await clientCompanyRepository.GetPagedByProviderIdAsync(
             query.ProviderId,
             query.Page,
             query.PageSize,

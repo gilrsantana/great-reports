@@ -5,18 +5,11 @@ using GreatReports.Infrastructure.Identity;
 
 namespace GreatReports.Infrastructure.Mailer;
 
-public class IdentityEmailSender : IEmailSender<Account>
+public class IdentityEmailSender(IBackgroundJobService backgroundJobService) : IEmailSender<Account>
 {
-    private readonly IBackgroundJobService _backgroundJobService;
-
-    public IdentityEmailSender(IBackgroundJobService backgroundJobService)
-    {
-        _backgroundJobService = backgroundJobService;
-    }
-
     public Task SendConfirmationLinkAsync(Account user, string email, string confirmationLink)
     {
-        var subject = "Confirme seu endereço de e-mail";
+        const string subject = "Confirme seu endereço de e-mail";
         var body = $"""
             <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 8px;">
                 <h2 style="color: #333333; text-align: center;">Bem-vindo ao Great Reports!</h2>
@@ -37,13 +30,13 @@ public class IdentityEmailSender : IEmailSender<Account>
             </div>
             """;
 
-        _backgroundJobService.Enqueue<SendEmailJob>(job => job.ExecuteAsync(email, subject, body, CancellationToken.None));
+        backgroundJobService.Enqueue<SendEmailJob>(job => job.ExecuteAsync(email, subject, body, CancellationToken.None));
         return Task.CompletedTask;
     }
 
     public Task SendPasswordResetLinkAsync(Account user, string email, string resetLink)
     {
-        var subject = "Recuperação de senha";
+        const string subject = "Recuperação de senha";
         var body = $"""
             <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 8px;">
                 <h2 style="color: #333333; text-align: center;">Recuperação de Senha</h2>
@@ -67,13 +60,13 @@ public class IdentityEmailSender : IEmailSender<Account>
             </div>
             """;
 
-        _backgroundJobService.Enqueue<SendEmailJob>(job => job.ExecuteAsync(email, subject, body, CancellationToken.None));
+        backgroundJobService.Enqueue<SendEmailJob>(job => job.ExecuteAsync(email, subject, body, CancellationToken.None));
         return Task.CompletedTask;
     }
 
     public Task SendPasswordResetCodeAsync(Account user, string email, string resetCode)
     {
-        var subject = "Código para recuperação de senha";
+        const string subject = "Código para recuperação de senha";
         var body = $"""
             <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 8px;">
                 <h2 style="color: #333333; text-align: center;">Código de Recuperação de Senha</h2>
@@ -93,7 +86,7 @@ public class IdentityEmailSender : IEmailSender<Account>
             </div>
             """;
 
-        _backgroundJobService.Enqueue<SendEmailJob>(job => job.ExecuteAsync(email, subject, body, CancellationToken.None));
+        backgroundJobService.Enqueue<SendEmailJob>(job => job.ExecuteAsync(email, subject, body, CancellationToken.None));
         return Task.CompletedTask;
     }
 }

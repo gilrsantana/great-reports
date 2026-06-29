@@ -3,16 +3,17 @@ using System.Text.RegularExpressions;
 
 namespace GreatReports.Domain.Entities;
 
-public class EmailAuditLog : BaseEntity
+public sealed partial class EmailAuditLog : BaseEntity
 {
-    private static readonly Regex EmailRegex = new(@"^[^@\s]+@[^@\s]+\.[^@\s]+$", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+    [GeneratedRegex(@"^[^@\s]+@[^@\s]+\.[^@\s]+$", RegexOptions.IgnoreCase)]
+    private static partial Regex EmailRegex();
 
-    public string Recipient { get; private set; } = string.Empty;
-    public string Subject { get; private set; } = string.Empty;
-    public string Body { get; private set; } = string.Empty;
-    public DateTimeOffset SentAt { get; private set; }
-    public bool Success { get; private set; }
-    public string? ErrorMessage { get; private set; }
+    public string Recipient { get; } = string.Empty;
+    public string Subject { get; } = string.Empty;
+    public string Body { get; } = string.Empty;
+    public DateTimeOffset SentAt { get; }
+    public bool Success { get; }
+    public string? ErrorMessage { get; }
 
     // EF Core constructor
     private EmailAuditLog() : base()
@@ -36,7 +37,7 @@ public class EmailAuditLog : BaseEntity
             return Result.Failure<EmailAuditLog>(new Error("EmailAuditLog.RecipientRequired", "O destinatário do e-mail é obrigatório."));
         }
 
-        if (!EmailRegex.IsMatch(recipient))
+        if (!EmailRegex().IsMatch(recipient))
         {
             return Result.Failure<EmailAuditLog>(new Error("EmailAuditLog.InvalidRecipientFormat", "O e-mail do destinatário está em um formato inválido."));
         }

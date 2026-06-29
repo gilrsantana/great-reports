@@ -229,10 +229,7 @@ public static class DependencyInjection
                     }));
         });
 
-        services.AddHangfireServer(options =>
-        {
-            options.WorkerCount = 2;
-        });
+        services.AddHangfireServer(options => options.WorkerCount = 2);
 
         return services;
     }

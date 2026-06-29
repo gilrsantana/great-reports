@@ -8,6 +8,6 @@ public class RoleClaimConfiguration : IEntityTypeConfiguration<IdentityRoleClaim
 {
     public void Configure(EntityTypeBuilder<IdentityRoleClaim<Guid>> builder)
     {
-        builder.ToTable("RoleClaims");
+        builder.ToTable("IdentityRoleClaims");
     }
 }

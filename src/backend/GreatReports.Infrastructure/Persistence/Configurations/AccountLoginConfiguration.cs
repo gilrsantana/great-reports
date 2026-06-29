@@ -8,6 +8,6 @@ public class AccountLoginConfiguration : IEntityTypeConfiguration<IdentityUserLo
 {
     public void Configure(EntityTypeBuilder<IdentityUserLogin<Guid>> builder)
     {
-        builder.ToTable("AccountLogins");
+        builder.ToTable("IdentityUserLogins");
     }
 }

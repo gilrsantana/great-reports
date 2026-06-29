@@ -44,13 +44,12 @@ public static class DependencyInjection
         var jwtSettings = app.Services.GetRequiredService<IOptions<JwtSettings>>().Value;
         app.MapHangfireDashboard("/hangfire", new DashboardOptions
         {
-            Authorization = new[]
-            {
+            Authorization = [
                 new HangfireDashboardAuthorizationFilter(
                     jwtSettings.Secret,
                     jwtSettings.Issuer,
                     jwtSettings.Audience)
-            },
+            ],
             IgnoreAntiforgeryToken = true
         });
 

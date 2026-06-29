@@ -16,7 +16,7 @@ public class Account : IdentityUser<Guid>
         UserName = email;
     }
 
-    public static Account Create(Guid id, string email) => new Account(id, email);
+    public static Account Create(Guid id, string email) => new(id, email);
 
     public void UpdateRefreshToken(string refreshToken, DateTime expiryTime)
     {

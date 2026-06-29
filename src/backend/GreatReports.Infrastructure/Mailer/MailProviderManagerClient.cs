@@ -1,11 +1,6 @@
 namespace GreatReports.Infrastructure.Mailer;
 
-public class MailProviderManagerClient
+public class MailProviderManagerClient(HttpClient httpClient)
 {
-    public HttpClient HttpClient { get; }
-
-    public MailProviderManagerClient(HttpClient httpClient)
-    {
-        HttpClient = httpClient;
-    }
+    public HttpClient HttpClient { get; } = httpClient;
 }

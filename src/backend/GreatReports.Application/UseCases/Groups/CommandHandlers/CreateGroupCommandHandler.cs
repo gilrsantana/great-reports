@@ -6,40 +6,27 @@ using GreatReports.Shared;
 
 namespace GreatReports.Application.UseCases.Groups.CommandHandlers;
 
-public class CreateGroupCommandHandler : ICommandHandler<CreateGroupCommand, Guid>
+public class CreateGroupCommandHandler(
+    IGroupRepository groupRepository,
+    IUserRepository userRepository,
+    IClientCompanyRepository clientCompanyRepository,
+    IProjectRepository projectRepository) : ICommandHandler<CreateGroupCommand, Guid>
 {
-    private readonly IGroupRepository _groupRepository;
-    private readonly IUserRepository _userRepository;
-    private readonly IClientCompanyRepository _clientCompanyRepository;
-    private readonly IProjectRepository _projectRepository;
-
-    public CreateGroupCommandHandler(
-        IGroupRepository groupRepository,
-        IUserRepository userRepository,
-        IClientCompanyRepository clientCompanyRepository,
-        IProjectRepository projectRepository)
-    {
-        _groupRepository = groupRepository;
-        _userRepository = userRepository;
-        _clientCompanyRepository = clientCompanyRepository;
-        _projectRepository = projectRepository;
-    }
-
     public async Task<Result<Guid>> HandleAsync(CreateGroupCommand command, CancellationToken cancellationToken = default)
     {
-        var groupLeader = await _userRepository.GetByIdAsync(command.GroupLeaderId, cancellationToken);
+        var groupLeader = await userRepository.GetByIdAsync(command.GroupLeaderId, cancellationToken);
         if (groupLeader == null)
         {
             return Result.Failure<Guid>(new Error("User.GroupLeaderNotFound", "Líder de grupo não encontrado."));
         }
 
-        var clientCompany = await _clientCompanyRepository.GetByIdAsync(command.ClientCompanyId, cancellationToken);
+        var clientCompany = await clientCompanyRepository.GetByIdAsync(command.ClientCompanyId, cancellationToken);
         if (clientCompany == null)
         {
             return Result.Failure<Guid>(new Error("ClientCompany.NotFound", "Empresa cliente não encontrada."));
         }
 
-        var project = await _projectRepository.GetByIdAsync(command.ProjectId, cancellationToken);
+        var project = await projectRepository.GetByIdAsync(command.ProjectId, cancellationToken);
         if (project == null)
         {
             return Result.Failure<Guid>(new Error("Project.NotFound", "Projeto não encontrado."));
@@ -58,8 +45,8 @@ public class CreateGroupCommandHandler : ICommandHandler<CreateGroupCommand, Gui
         }
 
         var group = entityResult.Value;
-        await _groupRepository.AddAsync(group, cancellationToken);
-        await _groupRepository.SaveChangesAsync(cancellationToken);
+        await groupRepository.AddAsync(group, cancellationToken);
+        await groupRepository.SaveChangesAsync(cancellationToken);
 
         return group.Id;
     }

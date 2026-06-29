@@ -2,10 +2,10 @@ using GreatReports.Shared;
 
 namespace GreatReports.Domain.Entities;
 
-public class ClientCompany : BaseEntity
+public sealed class ClientCompany : BaseEntity
 {
-    public Guid ProviderCompanyId { get; private set; }
-    public string Name { get; private set; } = string.Empty;
+    public Guid ProviderCompanyId { get; }
+    public string Name { get; } = string.Empty;
 
     // EF Core constructor
     private ClientCompany() : base()

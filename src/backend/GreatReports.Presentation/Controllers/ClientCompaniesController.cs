@@ -10,27 +10,16 @@ using Microsoft.AspNetCore.Mvc;
 namespace GreatReports.Presentation.Controllers;
 
 [Authorize(Roles = "Manager")]
-public class ClientCompaniesController : ApiControllerBase
+public class ClientCompaniesController(
+    ICommandHandler<RegisterClientCompanyCommand, Guid> registerHandler,
+    IQueryHandler<GetClientCompaniesQuery, PagedResponse<ClientCompanyDto>> getPagedHandler,
+    ICommandHandler<AddClientContactCommand, Guid> addContactHandler) : ApiControllerBase
 {
-    private readonly ICommandHandler<RegisterClientCompanyCommand, Guid> _registerHandler;
-    private readonly IQueryHandler<GetClientCompaniesQuery, PagedResponse<ClientCompanyDto>> _getPagedHandler;
-    private readonly ICommandHandler<AddClientContactCommand, Guid> _addContactHandler;
-
-    public ClientCompaniesController(
-        ICommandHandler<RegisterClientCompanyCommand, Guid> registerHandler,
-        IQueryHandler<GetClientCompaniesQuery, PagedResponse<ClientCompanyDto>> getPagedHandler,
-        ICommandHandler<AddClientContactCommand, Guid> addContactHandler)
-    {
-        _registerHandler = registerHandler;
-        _getPagedHandler = getPagedHandler;
-        _addContactHandler = addContactHandler;
-    }
-
     [HttpPost]
     public async Task<IActionResult> Register([FromBody] RegisterClientCompanyRequest request, CancellationToken cancellationToken)
     {
         var command = new RegisterClientCompanyCommand(request.ProviderCompanyId, request.Name);
-        var result = await _registerHandler.HandleAsync(command, cancellationToken);
+        var result = await registerHandler.HandleAsync(command, cancellationToken);
         return HandleResult(result);
     }
 
@@ -42,7 +31,7 @@ public class ClientCompaniesController : ApiControllerBase
         CancellationToken cancellationToken = default)
     {
         var query = new GetClientCompaniesQuery(providerId, page, pageSize);
-        var result = await _getPagedHandler.HandleAsync(query, cancellationToken);
+        var result = await getPagedHandler.HandleAsync(query, cancellationToken);
         return HandleResult(result);
     }
 
@@ -53,7 +42,7 @@ public class ClientCompaniesController : ApiControllerBase
         CancellationToken cancellationToken)
     {
         var command = new AddClientContactCommand(clientCompanyId, request.Name, request.Email, request.ContactType);
-        var result = await _addContactHandler.HandleAsync(command, cancellationToken);
+        var result = await addContactHandler.HandleAsync(command, cancellationToken);
         return HandleResult(result);
     }
 }

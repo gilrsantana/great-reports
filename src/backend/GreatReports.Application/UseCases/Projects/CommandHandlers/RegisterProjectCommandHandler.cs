@@ -6,22 +6,13 @@ using GreatReports.Shared;
 
 namespace GreatReports.Application.UseCases.Projects.CommandHandlers;
 
-public class RegisterProjectCommandHandler : ICommandHandler<RegisterProjectCommand, Guid>
+public class RegisterProjectCommandHandler(
+    IProjectRepository projectRepository,
+    IClientCompanyRepository clientCompanyRepository) : ICommandHandler<RegisterProjectCommand, Guid>
 {
-    private readonly IProjectRepository _projectRepository;
-    private readonly IClientCompanyRepository _clientCompanyRepository;
-
-    public RegisterProjectCommandHandler(
-        IProjectRepository projectRepository,
-        IClientCompanyRepository clientCompanyRepository)
-    {
-        _projectRepository = projectRepository;
-        _clientCompanyRepository = clientCompanyRepository;
-    }
-
     public async Task<Result<Guid>> HandleAsync(RegisterProjectCommand command, CancellationToken cancellationToken = default)
     {
-        var clientCompany = await _clientCompanyRepository.GetByIdAsync(command.ClientCompanyId, cancellationToken);
+        var clientCompany = await clientCompanyRepository.GetByIdAsync(command.ClientCompanyId, cancellationToken);
         if (clientCompany == null)
         {
             return Result.Failure<Guid>(new Error("ClientCompany.NotFound", "Empresa cliente não encontrada."));
@@ -34,8 +25,8 @@ public class RegisterProjectCommandHandler : ICommandHandler<RegisterProjectComm
         }
 
         var project = entityResult.Value;
-        await _projectRepository.AddAsync(project, cancellationToken);
-        await _projectRepository.SaveChangesAsync(cancellationToken);
+        await projectRepository.AddAsync(project, cancellationToken);
+        await projectRepository.SaveChangesAsync(cancellationToken);
 
         return project.Id;
     }

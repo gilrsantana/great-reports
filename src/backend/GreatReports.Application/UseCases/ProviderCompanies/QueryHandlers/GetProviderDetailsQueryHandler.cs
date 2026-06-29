@@ -5,18 +5,11 @@ using GreatReports.Shared;
 
 namespace GreatReports.Application.UseCases.ProviderCompanies.QueryHandlers;
 
-public class GetProviderDetailsQueryHandler : IQueryHandler<GetProviderDetailsQuery, ProviderDetailsDto>
+public class GetProviderDetailsQueryHandler(IProviderCompanyRepository providerCompanyRepository) : IQueryHandler<GetProviderDetailsQuery, ProviderDetailsDto>
 {
-    private readonly IProviderCompanyRepository _providerCompanyRepository;
-
-    public GetProviderDetailsQueryHandler(IProviderCompanyRepository providerCompanyRepository)
-    {
-        _providerCompanyRepository = providerCompanyRepository;
-    }
-
     public async Task<Result<ProviderDetailsDto>> HandleAsync(GetProviderDetailsQuery query, CancellationToken cancellationToken = default)
     {
-        var provider = await _providerCompanyRepository.GetByIdAsync(query.ProviderId, cancellationToken);
+        var provider = await providerCompanyRepository.GetByIdAsync(query.ProviderId, cancellationToken);
         if (provider == null)
         {
             return Result.Failure<ProviderDetailsDto>(new Error("ProviderCompany.NotFound", "Provedor não encontrado."));

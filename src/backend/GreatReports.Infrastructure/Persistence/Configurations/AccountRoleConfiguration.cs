@@ -8,6 +8,6 @@ public class AccountRoleConfiguration : IEntityTypeConfiguration<IdentityUserRol
 {
     public void Configure(EntityTypeBuilder<IdentityUserRole<Guid>> builder)
     {
-        builder.ToTable("AccountRoles");
+        builder.ToTable("IdentityUserRoles");
     }
 }

@@ -7,26 +7,16 @@ using GreatReports.Shared;
 
 namespace GreatReports.Application.UseCases.ClientContacts.CommandHandlers;
 
-public class AddClientContactCommandHandler : ICommandHandler<AddClientContactCommand, Guid>
+public class AddClientContactCommandHandler(
+    IClientCompanyRepository clientCompanyRepository,
+    IClientContactRepository clientContactRepository,
+    IIdentityService identityService) : ICommandHandler<AddClientContactCommand, Guid>
 {
-    private static readonly string[] _roles = { "Stakeholder" };
-    private readonly IClientCompanyRepository _clientCompanyRepository;
-    private readonly IClientContactRepository _clientContactRepository;
-    private readonly IIdentityService _identityService;
-
-    public AddClientContactCommandHandler(
-        IClientCompanyRepository clientCompanyRepository,
-        IClientContactRepository clientContactRepository,
-        IIdentityService identityService)
-    {
-        _clientCompanyRepository = clientCompanyRepository;
-        _clientContactRepository = clientContactRepository;
-        _identityService = identityService;
-    }
+    private static readonly string[] _roles = ["Stakeholder"];
 
     public async Task<Result<Guid>> HandleAsync(AddClientContactCommand command, CancellationToken cancellationToken = default)
     {
-        var clientCompany = await _clientCompanyRepository.GetByIdAsync(command.ClientCompanyId, cancellationToken);
+        var clientCompany = await clientCompanyRepository.GetByIdAsync(command.ClientCompanyId, cancellationToken);
         if (clientCompany == null)
         {
             return Result.Failure<Guid>(new Error("ClientCompany.NotFound", "Empresa cliente não encontrada."));
@@ -37,7 +27,7 @@ public class AddClientContactCommandHandler : ICommandHandler<AddClientContactCo
             return Result.Failure<Guid>(new Error("ClientContact.InvalidContactType", "O tipo de contato fornecido é inválido. Use Commercial ou Tech."));
         }
 
-        var existingContact = await _clientContactRepository.GetByEmailAsync(command.Email, cancellationToken);
+        var existingContact = await clientContactRepository.GetByEmailAsync(command.Email, cancellationToken);
         if (existingContact != null)
         {
             return Result.Failure<Guid>(new Error("ClientContact.EmailAlreadyExists", "Já existe um contato cadastrado com este e-mail."));
@@ -51,14 +41,14 @@ public class AddClientContactCommandHandler : ICommandHandler<AddClientContactCo
 
         var contact = entityResult.Value;
 
-        await _clientContactRepository.AddAsync(contact, cancellationToken);
-        await _clientContactRepository.SaveChangesAsync(cancellationToken);
+        await clientContactRepository.AddAsync(contact, cancellationToken);
+        await clientContactRepository.SaveChangesAsync(cancellationToken);
 
-        var createAccountSuccess = await _identityService.CreateUserAsync(contact.Id, command.Email, GenerateTempPassword(), _roles);
+        var createAccountSuccess = await identityService.CreateUserAsync(contact.Id, command.Email, GenerateTempPassword(), _roles);
         if (!createAccountSuccess)
         {
-            _clientContactRepository.Delete(contact);
-            await _clientContactRepository.SaveChangesAsync(cancellationToken);
+            clientContactRepository.Delete(contact);
+            await clientContactRepository.SaveChangesAsync(cancellationToken);
 
             return Result.Failure<Guid>(new Error("ClientContact.RegistrationRollback", "Falha ao criar credenciais de autenticação. O cadastro do contato foi revertido."));
         }

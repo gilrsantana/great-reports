@@ -116,7 +116,7 @@ public class HangfireDashboardAuthorizationFilterTests
         Assert.False(result);
     }
 
-    private string GenerateTestJwt(string role, bool isExpired = false)
+    private static string GenerateTestJwt(string role, bool isExpired = false)
     {
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Secret));
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);

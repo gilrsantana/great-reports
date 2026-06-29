@@ -4,19 +4,10 @@ using GreatReports.Shared;
 
 namespace GreatReports.Infrastructure.Mailer;
 
-public class MailProviderEmailSender : IEmailSender
+public class MailProviderEmailSender(
+    IMailProviderHttpClientFactory clientFactory,
+    IEmailAuditLogRepository auditLogRepository) : IEmailSender
 {
-    private readonly IMailProviderHttpClientFactory _clientFactory;
-    private readonly IEmailAuditLogRepository _auditLogRepository;
-
-    public MailProviderEmailSender(
-        IMailProviderHttpClientFactory clientFactory,
-        IEmailAuditLogRepository auditLogRepository)
-    {
-        _clientFactory = clientFactory;
-        _auditLogRepository = auditLogRepository;
-    }
-
     public async Task<Result> SendEmailAsync(string recipient, string subject, string body, CancellationToken cancellationToken = default)
     {
         // Validate invariants first by attempting to create a valid EmailAuditLog entity structure
@@ -32,7 +23,7 @@ public class MailProviderEmailSender : IEmailSender
 
         try
         {
-            var senderClient = _clientFactory.CreateSenderClient();
+            var senderClient = clientFactory.CreateSenderClient();
             var response = await senderClient.SendEmailAsync(recipient, subject, body, cancellationToken);
 
             if (response.IsSuccessStatusCode)
@@ -53,8 +44,8 @@ public class MailProviderEmailSender : IEmailSender
         // Create the actual audit log with the real outcome
         var auditLog = EmailAuditLog.Create(recipient, subject, body, sentAt, success, errorMessage).Value;
 
-        await _auditLogRepository.AddAsync(auditLog, cancellationToken);
-        await _auditLogRepository.SaveChangesAsync(cancellationToken);
+        await auditLogRepository.AddAsync(auditLog, cancellationToken);
+        await auditLogRepository.SaveChangesAsync(cancellationToken);
 
         if (!success)
         {

@@ -5,20 +5,13 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace GreatReports.Presentation.Controllers;
 
-public class AuthController : ApiControllerBase
+public class AuthController(ICommandHandler<ConfirmEmailCommand> confirmEmailHandler) : ApiControllerBase
 {
-    private readonly ICommandHandler<ConfirmEmailCommand> _confirmEmailHandler;
-
-    public AuthController(ICommandHandler<ConfirmEmailCommand> confirmEmailHandler)
-    {
-        _confirmEmailHandler = confirmEmailHandler;
-    }
-
     [HttpPost("confirm-email")]
     public async Task<IActionResult> ConfirmEmail([FromBody] ConfirmEmailRequest request, CancellationToken cancellationToken)
     {
         var command = new ConfirmEmailCommand(request.Email, request.Token);
-        var result = await _confirmEmailHandler.HandleAsync(command, cancellationToken);
+        var result = await confirmEmailHandler.HandleAsync(command, cancellationToken);
         return HandleResult(result);
     }
 }

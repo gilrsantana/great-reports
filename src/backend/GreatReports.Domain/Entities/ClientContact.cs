@@ -4,14 +4,15 @@ using System.Text.RegularExpressions;
 
 namespace GreatReports.Domain.Entities;
 
-public class ClientContact : BaseEntity
+public sealed partial class ClientContact : BaseEntity
 {
-    private static readonly Regex EmailRegex = new(@"^[^@\s]+@[^@\s]+\.[^@\s]+$", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+    [GeneratedRegex(@"^[^@\s]+@[^@\s]+\.[^@\s]+$", RegexOptions.IgnoreCase)]
+    private static partial Regex EmailRegex();
 
-    public Guid ClientCompanyId { get; private set; }
-    public string Name { get; private set; } = string.Empty;
-    public string Email { get; private set; } = string.Empty;
-    public ContactType Type { get; private set; }
+    public Guid ClientCompanyId { get; }
+    public string Name { get; } = string.Empty;
+    public string Email { get; } = string.Empty;
+    public ContactType Type { get; }
 
     // EF Core constructor
     private ClientContact() : base()
@@ -43,7 +44,7 @@ public class ClientContact : BaseEntity
             return Result.Failure<ClientContact>(new Error("ClientContact.InvalidEmail", "O e-mail do contato é obrigatório."));
         }
 
-        if (!EmailRegex.IsMatch(email))
+        if (!EmailRegex().IsMatch(email))
         {
             return Result.Failure<ClientContact>(new Error("ClientContact.InvalidEmailFormat", "O e-mail fornecido está em um formato inválido."));
         }
