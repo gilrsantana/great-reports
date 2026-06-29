@@ -11,8 +11,6 @@ public class ClientContact : BaseEntity
     public Guid ClientCompanyId { get; private set; }
     public string Name { get; private set; } = string.Empty;
     public string Email { get; private set; } = string.Empty;
-    public bool EmailConfirmed { get; private set; }
-    public string? VerificationToken { get; private set; }
     public ContactType Type { get; private set; }
 
     // EF Core constructor
@@ -26,7 +24,6 @@ public class ClientContact : BaseEntity
         Name = name;
         Email = email;
         Type = type;
-        EmailConfirmed = false;
     }
 
     public static Result<ClientContact> Create(Guid clientCompanyId, string name, string email, ContactType type)
@@ -52,18 +49,5 @@ public class ClientContact : BaseEntity
         }
 
         return new ClientContact(clientCompanyId, name, email, type);
-    }
-
-    public void GenerateVerificationToken()
-    {
-        VerificationToken = Guid.NewGuid().ToString("N");
-        Update();
-    }
-
-    public void ConfirmEmail()
-    {
-        EmailConfirmed = true;
-        VerificationToken = null;
-        Update();
     }
 }

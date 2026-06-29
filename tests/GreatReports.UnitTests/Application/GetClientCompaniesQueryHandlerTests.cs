@@ -1,14 +1,8 @@
 using GreatReports.Application.Common.Interfaces;
-using GreatReports.Application.Common.Models;
 using GreatReports.Application.UseCases.ClientCompanies.Queries;
+using GreatReports.Application.UseCases.ClientCompanies.QueryHandlers;
 using GreatReports.Domain.Entities;
-using GreatReports.Shared;
 using Moq;
-using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using Xunit;
 
 namespace GreatReports.UnitTests.Application;
 
@@ -62,7 +56,7 @@ public class GetClientCompaniesQueryHandlerTests
         // Arrange
         var providerId = Guid.NewGuid();
         var query = new GetClientCompaniesQuery(providerId, 1, 10);
-        
+
         var list = new List<ClientCompany>
         {
             ClientCompany.Create(providerId, "Client 1").Value,

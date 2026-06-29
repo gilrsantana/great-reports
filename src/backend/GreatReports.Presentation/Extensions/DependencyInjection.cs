@@ -1,10 +1,10 @@
-using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Scalar.AspNetCore;
 using GreatReports.Application.Extensions;
+using GreatReports.Infrastructure.Configurations;
 using GreatReports.Infrastructure.Extensions;
+using GreatReports.Presentation.Filters;
+using Hangfire;
+using Microsoft.Extensions.Options;
+using Scalar.AspNetCore;
 
 namespace GreatReports.Presentation.Extensions;
 
@@ -40,6 +40,19 @@ public static class DependencyInjection
         app.UseHttpsRedirection();
         app.UseAuthentication();
         app.UseAuthorization();
+
+        var jwtSettings = app.Services.GetRequiredService<IOptions<JwtSettings>>().Value;
+        app.MapHangfireDashboard("/hangfire", new DashboardOptions
+        {
+            Authorization = new[]
+            {
+                new HangfireDashboardAuthorizationFilter(
+                    jwtSettings.Secret,
+                    jwtSettings.Issuer,
+                    jwtSettings.Audience)
+            },
+            IgnoreAntiforgeryToken = true
+        });
 
         app.MapControllers();
 

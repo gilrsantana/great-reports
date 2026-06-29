@@ -23,6 +23,8 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\backend\GreatReports.Application\GreatReports.Application.csproj" />
     <ProjectReference Include="..\..\src\backend\GreatReports.Domain\GreatReports.Domain.csproj" />
+    <ProjectReference Include="..\..\src\backend\GreatReports.Infrastructure\GreatReports.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\src\backend\GreatReports.Presentation\GreatReports.Presentation.csproj" />
     <ProjectReference Include="..\..\src\backend\GreatReports.Shared\GreatReports.Shared.csproj" />
   </ItemGroup>
 

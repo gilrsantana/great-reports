@@ -1,6 +1,7 @@
 using System.Reflection;
-using Microsoft.Extensions.DependencyInjection;
+using GreatReports.Application.ApplicationJobs;
 using GreatReports.Application.Common.CQRS;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace GreatReports.Application.Extensions;
 
@@ -9,7 +10,7 @@ public static class DependencyInjection
     public static IServiceCollection AddApplication(this IServiceCollection services)
     {
         var assembly = Assembly.GetExecutingAssembly();
-        
+        services.AddTransient<SendEmailJob>();
         return services
             .RegisterCommandHandlers(assembly)
             .RegisterQueryHandlers(assembly);
@@ -20,7 +21,7 @@ public static class DependencyInjection
         var queryHandlerTypes = assembly.GetTypes()
             .Where(t => !t.IsAbstract && !t.IsInterface)
             .SelectMany(t => t.GetInterfaces()
-                .Where(i => i.IsGenericType && 
+                .Where(i => i.IsGenericType &&
                             i.GetGenericTypeDefinition() == typeof(IQueryHandler<,>))
                 .Select(i => new { Service = i, Implementation = t }));
 
@@ -37,8 +38,8 @@ public static class DependencyInjection
         var commandHandlerTypes = assembly.GetTypes()
             .Where(t => !t.IsAbstract && !t.IsInterface)
             .SelectMany(t => t.GetInterfaces()
-                .Where(i => i.IsGenericType && 
-                            (i.GetGenericTypeDefinition() == typeof(ICommandHandler<>) || 
+                .Where(i => i.IsGenericType &&
+                            (i.GetGenericTypeDefinition() == typeof(ICommandHandler<>) ||
                              i.GetGenericTypeDefinition() == typeof(ICommandHandler<,>)))
                 .Select(i => new { Service = i, Implementation = t }));
 

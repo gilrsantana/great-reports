@@ -1,6 +1,4 @@
 using GreatReports.Domain.Entities;
-using System;
-using Xunit;
 
 namespace GreatReports.UnitTests.Domain;
 
@@ -68,36 +66,19 @@ public class UserTests
         Assert.Equal(name, result.Value.DisplayName);
         Assert.Equal(providerId, result.Value.ProviderCompanyId);
         Assert.False(result.Value.EmailConfirmed);
-        Assert.Null(result.Value.VerificationToken);
     }
 
     [Fact]
-    public void GenerateVerificationToken_ShouldSetToken_WhenCalled()
-    {
-        // Arrange
-        var user = User.Create(Guid.NewGuid(), "João Silva", "joao.silva@provedor.com").Value;
-
-        // Act
-        user.GenerateVerificationToken();
-
-        // Assert
-        Assert.NotNull(user.VerificationToken);
-        Assert.NotEmpty(user.VerificationToken);
-    }
-
-    [Fact]
-    public void ConfirmEmail_ShouldClearTokenAndSetConfirmedTrue_WhenCalled()
+    public void ConfirmEmail_ShouldSetConfirmedTrue_WhenCalled()
     {
         // Arrange
         var user = User.Create(Guid.NewGuid(), "João Silva", "joao@email.com").Value;
-        user.GenerateVerificationToken();
 
         // Act
         user.ConfirmEmail();
 
         // Assert
         Assert.True(user.EmailConfirmed);
-        Assert.Null(user.VerificationToken);
     }
 
     [Fact]

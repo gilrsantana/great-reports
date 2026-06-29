@@ -1,7 +1,5 @@
 using GreatReports.Domain.Entities;
 using GreatReports.Domain.Enums;
-using System;
-using Xunit;
 
 namespace GreatReports.UnitTests.Domain;
 
@@ -69,37 +67,6 @@ public class ClientContactTests
         Assert.Equal(name, result.Value.Name);
         Assert.Equal(email, result.Value.Email);
         Assert.Equal(type, result.Value.Type);
-        Assert.False(result.Value.EmailConfirmed);
-        Assert.Null(result.Value.VerificationToken);
-    }
-
-    [Fact]
-    public void GenerateVerificationToken_ShouldSetToken_WhenCalled()
-    {
-        // Arrange
-        var contact = ClientContact.Create(Guid.NewGuid(), "Maria Souza", "maria@provedor.com", ContactType.Commercial).Value;
-
-        // Act
-        contact.GenerateVerificationToken();
-
-        // Assert
-        Assert.NotNull(contact.VerificationToken);
-        Assert.NotEmpty(contact.VerificationToken);
-    }
-
-    [Fact]
-    public void ConfirmEmail_ShouldClearTokenAndSetConfirmedTrue_WhenCalled()
-    {
-        // Arrange
-        var contact = ClientContact.Create(Guid.NewGuid(), "Maria Souza", "maria@provedor.com", ContactType.Commercial).Value;
-        contact.GenerateVerificationToken();
-
-        // Act
-        contact.ConfirmEmail();
-
-        // Assert
-        Assert.True(contact.EmailConfirmed);
-        Assert.Null(contact.VerificationToken);
     }
 
     [Fact]

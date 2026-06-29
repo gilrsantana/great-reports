@@ -1,12 +1,8 @@
 using GreatReports.Application.Common.Interfaces;
 using GreatReports.Application.UseCases.Projects.Commands;
+using GreatReports.Application.UseCases.Projects.CommandHandlers;
 using GreatReports.Domain.Entities;
-using GreatReports.Shared;
 using Moq;
-using System;
-using System.Threading;
-using System.Threading.Tasks;
-using Xunit;
 
 namespace GreatReports.UnitTests.Application;
 

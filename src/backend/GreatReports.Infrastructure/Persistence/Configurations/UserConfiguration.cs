@@ -22,8 +22,5 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
 
         builder.HasIndex(e => e.Email)
             .IsUnique();
-
-        builder.Property(e => e.VerificationToken)
-            .HasMaxLength(100);
     }
 }

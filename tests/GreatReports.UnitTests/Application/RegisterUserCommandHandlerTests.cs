@@ -1,12 +1,8 @@
 using GreatReports.Application.Common.Interfaces;
 using GreatReports.Application.UseCases.Users.Commands;
+using GreatReports.Application.UseCases.Users.CommandHandlers;
 using GreatReports.Domain.Entities;
-using GreatReports.Shared;
 using Moq;
-using System;
-using System.Threading;
-using System.Threading.Tasks;
-using Xunit;
 
 namespace GreatReports.UnitTests.Application;
 
@@ -15,7 +11,6 @@ public class RegisterUserCommandHandlerTests
     private readonly Mock<IUserRepository> _userRepositoryMock = new();
     private readonly Mock<IProviderCompanyRepository> _providerCompanyRepositoryMock = new();
     private readonly Mock<IIdentityService> _identityServiceMock = new();
-    private readonly Mock<IEmailVerificationService> _emailVerificationServiceMock = new();
     private readonly RegisterUserCommandHandler _handler;
 
     public RegisterUserCommandHandlerTests()
@@ -23,8 +18,7 @@ public class RegisterUserCommandHandlerTests
         _handler = new RegisterUserCommandHandler(
             _userRepositoryMock.Object,
             _providerCompanyRepositoryMock.Object,
-            _identityServiceMock.Object,
-            _emailVerificationServiceMock.Object);
+            _identityServiceMock.Object);
     }
 
     [Fact]
@@ -103,7 +97,11 @@ public class RegisterUserCommandHandlerTests
             .Setup(repo => repo.GetByEmailAsync(command.Email, It.IsAny<CancellationToken>()))
             .ReturnsAsync((User?)null);
         _identityServiceMock
-            .Setup(id => id.CreateUserAsync(It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string[]>()))
+            .Setup(id => id.CreateUserAsync(
+                It.IsAny<Guid>(),
+                It.IsAny<string>(),
+                It.IsAny<string>(),
+                It.IsAny<IEnumerable<string>>()))
             .ReturnsAsync(false); // Identity fails!
 
         // Act
@@ -120,7 +118,7 @@ public class RegisterUserCommandHandlerTests
     }
 
     [Fact]
-    public async Task Handle_ShouldReturnSuccess_AndSendEmail_WhenIdentityServiceSucceeds()
+    public async Task Handle_ShouldReturnSuccess_WhenIdentityServiceSucceeds()
     {
         // Arrange
         var provider = ProviderCompany.Create("Provider", "Tax").Value;
@@ -133,7 +131,11 @@ public class RegisterUserCommandHandlerTests
             .Setup(repo => repo.GetByEmailAsync(command.Email, It.IsAny<CancellationToken>()))
             .ReturnsAsync((User?)null);
         _identityServiceMock
-            .Setup(id => id.CreateUserAsync(It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string[]>()))
+            .Setup(id => id.CreateUserAsync(
+                It.IsAny<Guid>(),
+                command.Email,
+                It.IsAny<string>(),
+                It.Is<IEnumerable<string>>(r => r.Contains("Partner"))))
             .ReturnsAsync(true); // Identity succeeds!
 
         // Act
@@ -143,15 +145,10 @@ public class RegisterUserCommandHandlerTests
         Assert.True(result.IsSuccess);
         Assert.NotEqual(Guid.Empty, result.Value);
 
-        // Verify that AddAsync was called, but Delete was NOT called
+        // Verify that AddAsync was called, and Delete was NOT called
         _userRepositoryMock.Verify(repo => repo.AddAsync(It.IsAny<User>(), It.IsAny<CancellationToken>()), Times.Once);
         _userRepositoryMock.Verify(repo => repo.Delete(It.IsAny<User>()), Times.Never);
-        _userRepositoryMock.Verify(repo => repo.Update(It.IsAny<User>()), Times.Once);
-        _userRepositoryMock.Verify(repo => repo.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Exactly(2));
-        
-        // Verify welcome email was sent
-        _emailVerificationServiceMock.Verify(
-            email => email.SendVerificationEmailAsync("test@email.com", It.IsAny<string>(), It.IsAny<CancellationToken>()),
-            Times.Once);
+        _userRepositoryMock.Verify(repo => repo.Update(It.IsAny<User>()), Times.Never);
+        _userRepositoryMock.Verify(repo => repo.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 }

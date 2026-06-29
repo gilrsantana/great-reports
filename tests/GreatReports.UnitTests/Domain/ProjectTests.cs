@@ -1,6 +1,4 @@
 using GreatReports.Domain.Entities;
-using System;
-using Xunit;
 
 namespace GreatReports.UnitTests.Domain;
 

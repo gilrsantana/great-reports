@@ -11,7 +11,6 @@ public class User : BaseEntity
     public string DisplayName { get; private set; } = string.Empty;
     public string Email { get; private set; } = string.Empty;
     public bool EmailConfirmed { get; private set; }
-    public string? VerificationToken { get; private set; }
 
     // EF Core constructor
     private User() : base()
@@ -51,16 +50,9 @@ public class User : BaseEntity
         return new User(providerCompanyId, displayName, email);
     }
 
-    public void GenerateVerificationToken()
-    {
-        VerificationToken = Guid.NewGuid().ToString("N");
-        Update();
-    }
-
     public void ConfirmEmail()
     {
         EmailConfirmed = true;
-        VerificationToken = null;
         Update();
     }
 }

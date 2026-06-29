@@ -1,12 +1,12 @@
-using GreatReports.Application.Common.Interfaces;
-using GreatReports.Application.UseCases.Auth.Commands;
-using GreatReports.Domain.Entities;
-using GreatReports.Domain.Enums;
-using GreatReports.Shared;
-using Moq;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using GreatReports.Application.Common.Interfaces;
+using GreatReports.Application.UseCases.Auth.Commands;
+using GreatReports.Application.UseCases.Auth.CommandHandlers;
+using GreatReports.Domain.Entities;
+using GreatReports.Domain.Enums;
+using Moq;
 using Xunit;
 
 namespace GreatReports.UnitTests.Application;
@@ -32,7 +32,7 @@ public class ConfirmEmailCommandHandlerTests
         // Arrange
         var user = User.Create(Guid.NewGuid(), "João Silva", "test@email.com").Value;
         user.ConfirmEmail(); // Already confirmed
-        
+
         _userRepositoryMock
             .Setup(x => x.GetByEmailAsync("test@email.com", It.IsAny<CancellationToken>()))
             .ReturnsAsync(user);
@@ -45,6 +45,7 @@ public class ConfirmEmailCommandHandlerTests
         // Assert
         Assert.True(result.IsSuccess);
         _userRepositoryMock.Verify(x => x.Update(It.IsAny<User>()), Times.Never);
+        _identityServiceMock.Verify(x => x.ConfirmEmailAsync(It.IsAny<Guid>(), It.IsAny<string>()), Times.Never);
     }
 
     [Fact]
@@ -52,11 +53,14 @@ public class ConfirmEmailCommandHandlerTests
     {
         // Arrange
         var user = User.Create(Guid.NewGuid(), "João Silva", "test@email.com").Value;
-        user.GenerateVerificationToken();
-        
+
         _userRepositoryMock
             .Setup(x => x.GetByEmailAsync("test@email.com", It.IsAny<CancellationToken>()))
             .ReturnsAsync(user);
+
+        _identityServiceMock
+            .Setup(x => x.ConfirmEmailAsync(user.Id, "wrong-token"))
+            .ReturnsAsync(false);
 
         var command = new ConfirmEmailCommand("test@email.com", "wrong-token");
 
@@ -74,14 +78,17 @@ public class ConfirmEmailCommandHandlerTests
     {
         // Arrange
         var user = User.Create(Guid.NewGuid(), "João Silva", "test@email.com").Value;
-        user.GenerateVerificationToken();
-        var token = user.VerificationToken;
+        var token = "valid-token";
 
         _userRepositoryMock
             .Setup(x => x.GetByEmailAsync("test@email.com", It.IsAny<CancellationToken>()))
             .ReturnsAsync(user);
 
-        var command = new ConfirmEmailCommand("test@email.com", token!);
+        _identityServiceMock
+            .Setup(x => x.ConfirmEmailAsync(user.Id, token))
+            .ReturnsAsync(true);
+
+        var command = new ConfirmEmailCommand("test@email.com", token);
 
         // Act
         var result = await _handler.HandleAsync(command, CancellationToken.None);
@@ -89,35 +96,10 @@ public class ConfirmEmailCommandHandlerTests
         // Assert
         Assert.True(result.IsSuccess);
         Assert.True(user.EmailConfirmed);
-        Assert.Null(user.VerificationToken);
-        
+
         _userRepositoryMock.Verify(x => x.Update(user), Times.Once);
         _userRepositoryMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
-        _identityServiceMock.Verify(x => x.ConfirmEmailAsync(user.Id), Times.Once);
-    }
-
-    [Fact]
-    public async Task Handle_ShouldReturnSuccess_WhenContactAlreadyConfirmed()
-    {
-        // Arrange
-        var contact = ClientContact.Create(Guid.NewGuid(), "Maria", "maria@email.com", ContactType.Commercial).Value;
-        contact.ConfirmEmail(); // Already confirmed
-
-        _userRepositoryMock
-            .Setup(x => x.GetByEmailAsync("maria@email.com", It.IsAny<CancellationToken>()))
-            .ReturnsAsync((User?)null);
-        _clientContactRepositoryMock
-            .Setup(x => x.GetByEmailAsync("maria@email.com", It.IsAny<CancellationToken>()))
-            .ReturnsAsync(contact);
-
-        var command = new ConfirmEmailCommand("maria@email.com", "any-token");
-
-        // Act
-        var result = await _handler.HandleAsync(command, CancellationToken.None);
-
-        // Assert
-        Assert.True(result.IsSuccess);
-        _clientContactRepositoryMock.Verify(x => x.Update(It.IsAny<ClientContact>()), Times.Never);
+        _identityServiceMock.Verify(x => x.ConfirmEmailAsync(user.Id, token), Times.Once);
     }
 
     [Fact]
@@ -125,7 +107,6 @@ public class ConfirmEmailCommandHandlerTests
     {
         // Arrange
         var contact = ClientContact.Create(Guid.NewGuid(), "Maria", "maria@email.com", ContactType.Commercial).Value;
-        contact.GenerateVerificationToken();
 
         _userRepositoryMock
             .Setup(x => x.GetByEmailAsync("maria@email.com", It.IsAny<CancellationToken>()))
@@ -133,6 +114,10 @@ public class ConfirmEmailCommandHandlerTests
         _clientContactRepositoryMock
             .Setup(x => x.GetByEmailAsync("maria@email.com", It.IsAny<CancellationToken>()))
             .ReturnsAsync(contact);
+
+        _identityServiceMock
+            .Setup(x => x.ConfirmEmailAsync(contact.Id, "wrong-token"))
+            .ReturnsAsync(false);
 
         var command = new ConfirmEmailCommand("maria@email.com", "wrong-token");
 
@@ -142,7 +127,6 @@ public class ConfirmEmailCommandHandlerTests
         // Assert
         Assert.True(result.IsFailure);
         Assert.Equal("Auth.InvalidToken", result.Error.Code);
-        _clientContactRepositoryMock.Verify(x => x.Update(It.IsAny<ClientContact>()), Times.Never);
     }
 
     [Fact]
@@ -150,8 +134,7 @@ public class ConfirmEmailCommandHandlerTests
     {
         // Arrange
         var contact = ClientContact.Create(Guid.NewGuid(), "Maria", "maria@email.com", ContactType.Commercial).Value;
-        contact.GenerateVerificationToken();
-        var token = contact.VerificationToken;
+        var token = "valid-token";
 
         _userRepositoryMock
             .Setup(x => x.GetByEmailAsync("maria@email.com", It.IsAny<CancellationToken>()))
@@ -160,18 +143,20 @@ public class ConfirmEmailCommandHandlerTests
             .Setup(x => x.GetByEmailAsync("maria@email.com", It.IsAny<CancellationToken>()))
             .ReturnsAsync(contact);
 
-        var command = new ConfirmEmailCommand("maria@email.com", token!);
+        _identityServiceMock
+            .Setup(x => x.ConfirmEmailAsync(contact.Id, token))
+            .ReturnsAsync(true);
+
+        var command = new ConfirmEmailCommand("maria@email.com", token);
 
         // Act
         var result = await _handler.HandleAsync(command, CancellationToken.None);
 
         // Assert
         Assert.True(result.IsSuccess);
-        Assert.True(contact.EmailConfirmed);
-        Assert.Null(contact.VerificationToken);
-
-        _clientContactRepositoryMock.Verify(x => x.Update(contact), Times.Once);
-        _clientContactRepositoryMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+        _identityServiceMock.Verify(x => x.ConfirmEmailAsync(contact.Id, token), Times.Once);
+        _clientContactRepositoryMock.Verify(x => x.Update(It.IsAny<ClientContact>()), Times.Never);
+        _clientContactRepositoryMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 
     [Fact]

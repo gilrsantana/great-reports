@@ -1,11 +1,12 @@
-using System;
+using System.Net;
 using System.Text;
 using GreatReports.Application.Common.Interfaces;
 using GreatReports.Infrastructure.Configurations;
 using GreatReports.Infrastructure.Identity;
+using GreatReports.Infrastructure.Mailer;
+using GreatReports.Infrastructure.BackgroundJobs;
 using GreatReports.Infrastructure.Persistence;
 using GreatReports.Infrastructure.Persistence.Repositories;
-using GreatReports.Infrastructure.Mailer;
 using Hangfire;
 using Hangfire.MySql;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -32,21 +33,76 @@ public static class DependencyInjection
             .AddEntityFrameworkStores<GreatReportsDbContext>()
             .AddDefaultTokenProviders();
 
-        services.AddScoped<IIdentityService, IdentityService>();
-        services.AddScoped<IProviderCompanyRepository, ProviderCompanyRepository>();
-        services.AddScoped<IClientCompanyRepository, ClientCompanyRepository>();
-        services.AddScoped<IProjectRepository, ProjectRepository>();
-        services.AddScoped<IUserRepository, UserRepository>();
-        services.AddScoped<IGroupRepository, GroupRepository>();
-        services.AddScoped<IDailyActivityRepository, DailyActivityRepository>();
-        services.AddScoped<IClientContactRepository, ClientContactRepository>();
-        services.AddScoped<IEmailVerificationService, EmailVerificationService>();
-
         services
             .SetAuthentication()
             .SetJwtBearerOptions()
             .SetHangfire(configuration);
 
+        services.ConfigureHttpClient()
+            .ConfigureRepository()
+            .ConfigureInfrastructureServices();
+
+        return services;
+    }
+
+    private static IServiceCollection ConfigureInfrastructureServices(this IServiceCollection services)
+    {
+        return
+            services.AddScoped<IIdentityService, IdentityService>()
+                .AddScoped<IMailProviderHttpClientFactory, MailProviderHttpClientFactory>()
+                .AddScoped<IEmailSender, MailProviderEmailSender>()
+                .AddScoped<IBackgroundJobService, BackgroundJobService>()
+                .AddScoped<IEmailSender<Account>, IdentityEmailSender>();
+    }
+
+    private static IServiceCollection ConfigureRepository(this IServiceCollection services)
+    {
+        return
+            services.AddScoped<IProviderCompanyRepository, ProviderCompanyRepository>()
+                .AddScoped<IClientCompanyRepository, ClientCompanyRepository>()
+                .AddScoped<IProjectRepository, ProjectRepository>()
+                .AddScoped<IUserRepository, UserRepository>()
+                .AddScoped<IGroupRepository, GroupRepository>()
+                .AddScoped<IDailyActivityRepository, DailyActivityRepository>()
+                .AddScoped<IClientContactRepository, ClientContactRepository>()
+                .AddScoped<IEmailAuditLogRepository, EmailAuditLogRepository>();
+    }
+
+    private static IServiceCollection ConfigureHttpClient(this IServiceCollection services)
+    {
+        services.AddHttpClient<MailProviderManagerClient>((sp, client) =>
+            {
+                var settings = sp.GetRequiredService<IOptions<MailProviderSettings>>().Value;
+                if (!string.IsNullOrEmpty(settings.BaseAddress))
+                {
+                    client.BaseAddress = new Uri(settings.BaseAddress);
+                }
+            })
+            .ConfigurePrimaryHttpMessageHandler(sp =>
+            {
+                var settings = sp.GetRequiredService<IOptions<MailProviderSettings>>().Value;
+                return new HttpClientHandler
+                {
+                    Credentials = new NetworkCredential(settings.ManagerApiKey, "")
+                };
+            });
+
+        services.AddHttpClient<MailProviderSenderClient>((sp, client) =>
+            {
+                var settings = sp.GetRequiredService<IOptions<MailProviderSettings>>().Value;
+                if (!string.IsNullOrEmpty(settings.BaseAddress))
+                {
+                    client.BaseAddress = new Uri(settings.BaseAddress);
+                }
+            })
+            .ConfigurePrimaryHttpMessageHandler(sp =>
+            {
+                var settings = sp.GetRequiredService<IOptions<MailProviderSettings>>().Value;
+                return new HttpClientHandler
+                {
+                    Credentials = new NetworkCredential(settings.SenderApiKey, "")
+                };
+            });
         return services;
     }
 
@@ -56,7 +112,9 @@ public static class DependencyInjection
             .Configure<DatabaseOptions>(configuration.GetSection(DatabaseOptions.SectionName))
             .Configure<JwtSettings>(configuration.GetSection(JwtSettings.SectionName))
             .Configure<IdentityOptions>(configuration.GetSection("IdentityOptions"))
-            .Configure<DataProtectionTokenProviderOptions>(configuration.GetSection("DataProtectionTokenProviderOptions"));
+            .Configure<DataProtectionTokenProviderOptions>(configuration.GetSection("DataProtectionTokenProviderOptions"))
+            .Configure<MailProviderSettings>(configuration.GetSection(MailProviderSettings.SectionName))
+            .Configure<ClientSettings>(configuration.GetSection(ClientSettings.SectionName));
     }
 
     private static IServiceCollection SetupDatabase(
@@ -171,7 +229,10 @@ public static class DependencyInjection
                     }));
         });
 
-        services.AddHangfireServer();
+        services.AddHangfireServer(options =>
+        {
+            options.WorkerCount = 2;
+        });
 
         return services;
     }

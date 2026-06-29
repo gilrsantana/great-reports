@@ -1,6 +1,4 @@
 using GreatReports.Shared;
-using System;
-using Xunit;
 
 namespace GreatReports.UnitTests.Shared;
 

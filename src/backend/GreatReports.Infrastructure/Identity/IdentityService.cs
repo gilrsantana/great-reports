@@ -15,15 +15,21 @@ public class IdentityService : IIdentityService
     private readonly UserManager<Account> _userManager;
     private readonly RoleManager<Role> _roleManager;
     private readonly JwtSettings _jwtSettings;
+    private readonly IEmailSender<Account> _emailSender;
+    private readonly ClientSettings _clientSettings;
 
     public IdentityService(
         UserManager<Account> userManager,
         RoleManager<Role> roleManager,
-        IOptions<JwtSettings> jwtSettings)
+        IOptions<JwtSettings> jwtSettings,
+        IEmailSender<Account> emailSender,
+        IOptions<ClientSettings> clientSettings)
     {
         _userManager = userManager;
         _roleManager = roleManager;
         _jwtSettings = jwtSettings.Value;
+        _emailSender = emailSender;
+        _clientSettings = clientSettings.Value;
     }
 
     public async Task<(string AccessToken, string RefreshToken)?> GenerateTokensAsync(Guid accountId, string email, IEnumerable<string> roles)
@@ -77,6 +83,11 @@ public class IdentityService : IIdentityService
             await _userManager.AddToRoleAsync(account, roleName);
         }
 
+        var token = await _userManager.GenerateEmailConfirmationTokenAsync(account);
+        var baseUrl = _clientSettings.BaseUrl.TrimEnd('/');
+        var link = $"{baseUrl}/confirm-email?email={Uri.EscapeDataString(email)}&token={Uri.EscapeDataString(token)}";
+        await _emailSender.SendConfirmationLinkAsync(account, email, link);
+
         return true;
     }
 
@@ -90,13 +101,12 @@ public class IdentityService : IIdentityService
         return result.Succeeded;
     }
 
-    public async Task<bool> ConfirmEmailAsync(Guid accountId)
+    public async Task<bool> ConfirmEmailAsync(Guid accountId, string token)
     {
         var account = await _userManager.FindByIdAsync(accountId.ToString());
         if (account == null) return false;
 
-        account.EmailConfirmed = true;
-        var result = await _userManager.UpdateAsync(account);
+        var result = await _userManager.ConfirmEmailAsync(account, token);
         return result.Succeeded;
     }
 

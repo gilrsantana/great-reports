@@ -23,9 +23,6 @@ public class ClientContactConfiguration : IEntityTypeConfiguration<ClientContact
         builder.HasIndex(e => e.Email)
             .IsUnique();
 
-        builder.Property(e => e.VerificationToken)
-            .HasMaxLength(100);
-
         builder.Property(e => e.Type)
             .HasConversion<string>()
             .HasMaxLength(50)

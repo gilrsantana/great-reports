@@ -15,4 +15,9 @@ public class ClientContactRepository : BaseEntityRepository<ClientContact>, ICli
         return await DbContext.Set<ClientContact>()
             .FirstOrDefaultAsync(c => c.Email == email && c.Active, cancellationToken);
     }
+
+    public void Delete(ClientContact contact)
+    {
+        DbContext.Set<ClientContact>().Remove(contact);
+    }
 }
