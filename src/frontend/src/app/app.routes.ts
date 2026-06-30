@@ -46,6 +46,16 @@ export const routes: Routes = [
     canActivate: [authGuard]
   },
   {
+    path: 'admin/clientes',
+    loadComponent: () => import('./features/admin/client-list/client-list.component').then(m => m.ClientListComponent),
+    canActivate: [authGuard]
+  },
+  {
+    path: 'admin/clientes/novo',
+    loadComponent: () => import('./features/admin/client-register/client-register.component').then(m => m.ClientRegisterComponent),
+    canActivate: [authGuard]
+  },
+  {
     path: 'minha-conta',
     loadComponent: () => import('./features/account/account-management.component').then(m => m.AccountManagementComponent),
     canActivate: [authGuard]

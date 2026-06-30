@@ -1,0 +1,151 @@
+import { Component, OnInit, signal, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
+import { CompanyService } from '../../../core/services/company.service';
+import { ClientCompany } from '../../../core/models/client-company.models';
+
+@Component({
+  selector: 'app-client-list',
+  standalone: true,
+  imports: [CommonModule, RouterModule],
+  template: `
+    <div class="p-6 min-h-screen bg-[var(--color-bg-primary)] text-white font-['Inter']">
+      
+      <div class="max-w-6xl mx-auto space-y-6">
+        
+        <!-- Header Bar -->
+        <div class="flex justify-between items-center bg-white/5 border border-white/10 rounded-xl p-6 backdrop-blur-md">
+          <div>
+            <h1 class="text-3xl font-extrabold tracking-tight font-['Outfit'] text-white">
+              Empresas Clientes
+            </h1>
+            <p class="text-xs text-[var(--color-text-secondary)] mt-2 uppercase tracking-wider">
+              Gerencie as empresas parceiras atendidas por sua organização.
+            </p>
+          </div>
+          <button routerLink="/admin/clientes/novo" class="px-4 py-2.5 bg-[var(--color-accent-brand)] hover:opacity-90 text-white rounded-lg text-sm font-semibold transition-all shadow-md shadow-indigo-500/20 cursor-pointer">
+            + Nova Empresa Cliente
+          </button>
+        </div>
+
+        <!-- Table Card -->
+        <div class="bg-white/5 border border-white/10 rounded-xl p-6 backdrop-blur-md flex flex-col justify-between">
+          <div>
+            <div class="flex justify-between items-center mb-6">
+              <h3 class="text-lg font-bold text-white">Clientes Cadastrados</h3>
+              <span class="text-xs px-2 py-1 bg-white/5 border border-white/10 rounded text-gray-400">Total: {{ totalItems() }}</span>
+            </div>
+
+            <!-- Loader -->
+            <div *ngIf="loading()" class="py-12 flex justify-center items-center text-gray-400">
+              <svg class="animate-spin h-8 w-8 text-[var(--color-accent-brand)] mr-3" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              <span>Carregando empresas clientes...</span>
+            </div>
+
+            <!-- Empty State -->
+            <div *ngIf="!loading() && clients().length === 0" class="py-16 text-center text-gray-400 border border-dashed border-white/10 rounded-lg">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto text-gray-600 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+              </svg>
+              <p class="font-semibold text-white">Nenhuma empresa cliente cadastrada</p>
+              <p class="text-sm text-gray-500 mt-1">Defina o ID de um Provedor válido no painel para listar as empresas clientes.</p>
+            </div>
+
+            <!-- Table -->
+            <div *ngIf="!loading() && clients().length > 0" class="overflow-x-auto">
+              <table class="w-full text-left border-collapse text-sm">
+                <thead>
+                  <tr class="border-b border-white/10 text-gray-400 font-medium">
+                    <th class="py-3 px-4">Nome da Empresa</th>
+                    <th class="py-3 px-4">UUID</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-white/5">
+                  <tr *ngFor="let client of clients()" class="hover:bg-white/5 transition-colors">
+                    <td class="py-3 px-4 font-semibold text-white">{{ client.name }}</td>
+                    <td class="py-3 px-4 text-gray-400 font-mono text-xs">{{ client.id }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Pagination Footer -->
+          <div *ngIf="clients().length > 0" class="flex justify-between items-center mt-6 pt-4 border-t border-white/10">
+            <span class="text-xs text-gray-400">Página {{ page() }} de {{ totalPages() }}</span>
+            <div class="flex gap-2">
+              <button (click)="prevPage()" [disabled]="page() <= 1" class="px-3 py-1.5 bg-white/5 hover:bg-white/10 disabled:opacity-30 border border-white/10 rounded-lg text-xs transition-colors cursor-pointer">
+                Anterior
+              </button>
+              <button (click)="nextPage()" [disabled]="page() >= totalPages()" class="px-3 py-1.5 bg-white/5 hover:bg-white/10 disabled:opacity-30 border border-white/10 rounded-lg text-xs transition-colors cursor-pointer">
+                Próxima
+              </button>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+  `
+})
+export class ClientListComponent implements OnInit {
+  private readonly companyService = inject(CompanyService);
+
+  readonly clients = signal<ClientCompany[]>([]);
+  readonly loading = signal<boolean>(true);
+
+  // Pagination
+  readonly page = signal<number>(1);
+  readonly pageSize = signal<number>(8);
+  readonly totalItems = signal<number>(0);
+  readonly totalPages = signal<number>(0);
+
+  ngOnInit() {
+    this.loadClients();
+  }
+
+  async loadClients() {
+    this.loading.set(true);
+    const providerId = localStorage.getItem('active_provider_id');
+    if (!providerId) {
+      this.clients.set([]);
+      this.loading.set(false);
+      return;
+    }
+
+    try {
+      const response = await this.companyService.getClientCompanies(
+        providerId,
+        this.page(),
+        this.pageSize()
+      );
+      this.clients.set(response.items);
+      this.totalItems.set(response.totalCount);
+      this.totalPages.set(response.totalPages);
+    } catch (err) {
+      console.error(err);
+      this.clients.set([]);
+    } finally {
+      this.loading.set(false);
+    }
+  }
+
+  prevPage() {
+    if (this.page() > 1) {
+      this.page.update(p => p - 1);
+      this.loadClients();
+    }
+  }
+
+  nextPage() {
+    if (this.page() < this.totalPages()) {
+      this.page.update(p => p + 1);
+      this.loadClients();
+    }
+  }
+}

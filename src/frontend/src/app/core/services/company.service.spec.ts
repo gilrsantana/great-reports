@@ -50,4 +50,32 @@ describe('CompanyService', () => {
     expect(result.name).toBe('Test Provider');
     expect(result.id).toBe('prov-guid');
   });
+
+  it('should call api for registerClient', async () => {
+    mockApi.invoke.mockResolvedValue('client-guid');
+
+    const result = await service.registerClient({
+      providerCompanyId: 'prov-guid',
+      name: 'ACME Client'
+    });
+
+    expect(result).toBe('client-guid');
+  });
+
+  it('should call api for getClientCompanies and map paged response', async () => {
+    mockApi.invoke.mockResolvedValue({
+      items: [{ id: 'client-1', name: 'Client One' }],
+      page: 1,
+      pageSize: 5,
+      totalCount: 1,
+      totalPages: 1
+    });
+
+    const result = await service.getClientCompanies('prov-guid', 1, 5);
+
+    expect(result.items.length).toBe(1);
+    expect(result.items[0].id).toBe('client-1');
+    expect(result.items[0].providerCompanyId).toBe('prov-guid');
+    expect(result.totalCount).toBe(1);
+  });
 });
