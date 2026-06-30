@@ -63,16 +63,54 @@ public class DailyActivity : BaseEntity
         return new DailyActivity(partnerId, title, theme, content, referenceDate, status, isBlocked);
     }
 
+    public Result Update(string title, string theme, string content, DateTime referenceDate, ActivityStatus status, bool isBlocked)
+    {
+        if (IsPublished)
+        {
+            return Result.Failure(new Error("DailyActivity.AlreadyPublished", "Esta atividade já foi publicada e não pode ser editada."));
+        }
+
+        if (string.IsNullOrWhiteSpace(title))
+        {
+            return Result.Failure(new Error("DailyActivity.InvalidTitle", "O título da atividade é obrigatório."));
+        }
+
+        if (string.IsNullOrWhiteSpace(theme))
+        {
+            return Result.Failure(new Error("DailyActivity.InvalidTheme", "O tema da atividade é obrigatório."));
+        }
+
+        if (string.IsNullOrWhiteSpace(content))
+        {
+            return Result.Failure(new Error("DailyActivity.InvalidContent", "O conteúdo detalhado da atividade é obrigatório."));
+        }
+
+        if (referenceDate == default)
+        {
+            return Result.Failure(new Error("DailyActivity.InvalidReferenceDate", "A data de referência da atividade é obrigatória."));
+        }
+
+        Title = title;
+        Theme = theme;
+        Content = content;
+        ReferenceDate = referenceDate;
+        Status = status;
+        IsBlocked = isBlocked;
+
+        base.Update();
+        return Result.Success();
+    }
+
     public void Publish()
     {
         IsPublished = true;
-        Update();
+        base.Update();
     }
 
     public void SetProcessed(string summarizedContent)
     {
         SummarizedContent = summarizedContent;
         ProcessedAt = DateTime.UtcNow;
-        Update();
+        base.Update();
     }
 }

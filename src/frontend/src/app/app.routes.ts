@@ -81,6 +81,21 @@ export const routes: Routes = [
     canActivate: [authGuard]
   },
   {
+    path: 'parceiro/atividades',
+    loadComponent: () => import('./features/partner/activity-history/activity-history.component').then(m => m.ActivityHistoryComponent),
+    canActivate: [authGuard]
+  },
+  {
+    path: 'parceiro/atividades/registrar',
+    loadComponent: () => import('./features/partner/activity-log/activity-log.component').then(m => m.ActivityLogComponent),
+    canActivate: [authGuard]
+  },
+  {
+    path: 'parceiro/atividades/editar/:id',
+    loadComponent: () => import('./features/partner/activity-log/activity-log.component').then(m => m.ActivityLogComponent),
+    canActivate: [authGuard]
+  },
+  {
     path: '**',
     redirectTo: 'login'
   }
