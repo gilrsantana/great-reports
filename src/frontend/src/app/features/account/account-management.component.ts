@@ -1,0 +1,175 @@
+import { Component, signal, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
+import { AuthService } from '../../core/services/auth.service';
+
+@Component({
+  selector: 'app-account-management',
+  standalone: true,
+  imports: [CommonModule, ReactiveFormsModule],
+  template: `
+    <div class="p-6 min-h-screen bg-[var(--color-bg-primary)] text-white px-4 font-['Inter']">
+      
+      <div class="max-w-2xl mx-auto space-y-6">
+        
+        <!-- Header -->
+        <div class="bg-white/5 border border-white/10 rounded-xl p-6 backdrop-blur-md">
+          <h1 class="text-3xl font-extrabold tracking-tight font-['Outfit'] text-white">
+            Minha Conta
+          </h1>
+          <p class="text-xs text-[var(--color-text-secondary)] mt-2 uppercase tracking-wider">
+            Visualize seus dados de perfil e altere sua senha de acesso.
+          </p>
+        </div>
+
+        <!-- Profile Details Card -->
+        <div class="bg-white/5 border border-white/10 rounded-xl p-6 backdrop-blur-md space-y-4">
+          <h2 class="text-lg font-bold text-white mb-4">Informações de Perfil</h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <span class="text-xs text-[var(--color-text-secondary)] block font-semibold uppercase tracking-wider">E-mail</span>
+              <span class="text-sm font-bold text-white block mt-1">{{ email() || 'Não disponível' }}</span>
+            </div>
+            <div>
+              <span class="text-xs text-[var(--color-text-secondary)] block font-semibold uppercase tracking-wider">Função / Cargo</span>
+              <span class="text-sm font-bold text-indigo-400 block mt-1">{{ role() || 'Não disponível' }}</span>
+            </div>
+            <div class="md:col-span-2">
+              <span class="text-xs text-[var(--color-text-secondary)] block font-semibold uppercase tracking-wider">Identificador (UUID)</span>
+              <span class="text-xs font-mono text-gray-400 block mt-1">{{ userId() || 'Não disponível' }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Password Change Card -->
+        <div class="bg-white/5 border border-white/10 rounded-xl p-6 backdrop-blur-md">
+          <h2 class="text-lg font-bold text-white mb-4">Alterar Senha</h2>
+          
+          <form [formGroup]="passwordForm" (ngSubmit)="onPasswordSubmit()" class="space-y-4">
+            <!-- Current Password -->
+            <div>
+              <label for="currentPassword" class="block text-xs font-semibold text-[var(--color-text-secondary)] uppercase tracking-wider mb-2">
+                Senha Atual
+              </label>
+              <input
+                id="currentPassword"
+                type="password"
+                formControlName="currentPassword"
+                class="w-full bg-[var(--color-bg-tertiary)] border border-white/10 focus:border-[var(--color-accent-brand)] rounded-lg px-4 py-2.5 text-white placeholder-gray-500 text-sm focus-visible:ring-2 focus-visible:ring-[var(--color-accent-brand)] focus-visible:outline-none transition-colors"
+                placeholder="••••••••"
+              />
+              <div *ngIf="passwordForm.get('currentPassword')?.touched && passwordForm.get('currentPassword')?.invalid" class="text-xs text-[var(--color-accent-rose)] mt-1.5 font-medium">
+                O preenchimento da senha atual é obrigatório.
+              </div>
+            </div>
+
+            <!-- New Password -->
+            <div>
+              <label for="newPassword" class="block text-xs font-semibold text-[var(--color-text-secondary)] uppercase tracking-wider mb-2">
+                Nova Senha
+              </label>
+              <input
+                id="newPassword"
+                type="password"
+                formControlName="newPassword"
+                class="w-full bg-[var(--color-bg-tertiary)] border border-white/10 focus:border-[var(--color-accent-brand)] rounded-lg px-4 py-2.5 text-white placeholder-gray-500 text-sm focus-visible:ring-2 focus-visible:ring-[var(--color-accent-brand)] focus-visible:outline-none transition-colors"
+                placeholder="••••••••"
+              />
+              <div *ngIf="passwordForm.get('newPassword')?.touched && passwordForm.get('newPassword')?.invalid" class="text-xs text-[var(--color-accent-rose)] mt-1.5 font-medium">
+                A nova senha deve ter no mínimo 8 caracteres.
+              </div>
+            </div>
+
+            <!-- Confirm Password -->
+            <div>
+              <label for="confirmPassword" class="block text-xs font-semibold text-[var(--color-text-secondary)] uppercase tracking-wider mb-2">
+                Confirmar Nova Senha
+              </label>
+              <input
+                id="confirmPassword"
+                type="password"
+                formControlName="confirmPassword"
+                class="w-full bg-[var(--color-bg-tertiary)] border border-white/10 focus:border-[var(--color-accent-brand)] rounded-lg px-4 py-2.5 text-white placeholder-gray-500 text-sm focus-visible:ring-2 focus-visible:ring-[var(--color-accent-brand)] focus-visible:outline-none transition-colors"
+                placeholder="••••••••"
+              />
+              <div *ngIf="passwordForm.touched && passwordForm.errors?.['mismatch']" class="text-xs text-[var(--color-accent-rose)] mt-1.5 font-medium">
+                As novas senhas não coincidem.
+              </div>
+            </div>
+
+            <!-- Messages -->
+            <div *ngIf="error()" class="p-3 bg-[var(--color-accent-rose)]/10 border border-[var(--color-accent-rose)]/25 rounded-lg text-xs text-[var(--color-accent-rose)] font-medium">
+              {{ error() }}
+            </div>
+            <div *ngIf="success()" class="p-3 bg-[var(--color-accent-emerald)]/10 border border-[var(--color-accent-emerald)]/25 rounded-lg text-xs text-[var(--color-accent-emerald)] font-medium">
+              Sua senha foi alterada com sucesso!
+            </div>
+
+            <!-- Submit Button -->
+            <div class="flex justify-end pt-4">
+              <button
+                type="submit"
+                [disabled]="passwordForm.invalid || loading()"
+                class="px-6 py-2.5 bg-[var(--color-accent-brand)] hover:opacity-90 disabled:opacity-50 text-white font-semibold rounded-lg text-sm transition-all shadow-md shadow-indigo-500/10 hover:shadow-indigo-500/20 flex items-center gap-2 cursor-pointer disabled:cursor-not-allowed"
+              >
+                <svg *ngIf="loading()" class="animate-spin h-4 w-4 text-white" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                <span>Alterar Senha</span>
+              </button>
+            </div>
+          </form>
+        </div>
+
+      </div>
+
+    </div>
+  `
+})
+export class AccountManagementComponent {
+  private readonly fb = inject(FormBuilder);
+  private readonly authService = inject(AuthService);
+
+  readonly email = signal<string | null>(this.authService.getEmail());
+  readonly role = signal<string | null>(this.authService.getRole());
+  readonly userId = signal<string | null>(this.authService.getUserId());
+
+  readonly loading = signal<boolean>(false);
+  readonly error = signal<string | null>(null);
+  readonly success = signal<boolean>(false);
+
+  readonly passwordForm = this.fb.group({
+    currentPassword: ['', Validators.required],
+    newPassword: ['', [Validators.required, Validators.minLength(8)]],
+    confirmPassword: ['', Validators.required]
+  }, {
+    validators: (group) => {
+      const newPass = group.get('newPassword')?.value;
+      const confirmPass = group.get('confirmPassword')?.value;
+      return newPass === confirmPass ? null : { mismatch: true };
+    }
+  });
+
+  async onPasswordSubmit() {
+    if (this.passwordForm.invalid) return;
+
+    this.loading.set(true);
+    this.error.set(null);
+    this.success.set(false);
+
+    const { currentPassword, newPassword } = this.passwordForm.value;
+
+    try {
+      await this.authService.changePassword(currentPassword!, newPassword!);
+      this.success.set(true);
+      this.passwordForm.reset();
+    } catch (err: any) {
+      console.error(err);
+      const errMsg = err?.error?.detail || err?.message || 'Erro ao alterar a senha. Verifique se a senha atual está correta.';
+      this.error.set(errMsg);
+    } finally {
+      this.loading.set(false);
+    }
+  }
+}
