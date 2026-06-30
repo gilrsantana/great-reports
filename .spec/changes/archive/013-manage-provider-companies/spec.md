@@ -40,30 +40,37 @@ We will use:
 
 ### Tasks - Core Services Wrapper
 
-- [ ] Modify `src/app/core/services/company.service.ts` to wrap `apiProviderCompaniesPost` and `apiProviderCompaniesIdGet` using the generated client.
+- [x] Modify `src/app/core/services/company.service.ts` to wrap `apiProviderCompaniesPost` and `apiProviderCompaniesIdGet` using the generated client.
   - Expose `registerProvider(req: RegisterProviderCompanyRequest): Promise<string>`.
   - Expose `getProviderDetails(id: string): Promise<ProviderDetailsDto>`.
+>  ✅ 2026-06-29 14:10 - Implemented company operations in CompanyService.
 
 ### Tasks - Provider Company UI Components
 
-- [ ] Create standalone ProviderDetailsComponent (`src/app/features/admin/provider-details/provider-details.component.ts`):
+- [x] Create standalone ProviderDetailsComponent (`src/app/features/admin/provider-details/provider-details.component.ts`):
   - Render details: Nome do Provedor, CNPJ, and Identificador (UUID).
   - Use glassmorphic card design (`bg-white/5 border border-white/10 backdrop-blur-md`).
-- [ ] Create standalone ProviderRegisterComponent (`src/app/features/admin/provider-register/provider-register.component.ts`):
+>  ✅ 2026-06-29 14:10 - Created ProviderDetailsComponent.
+- [x] Create standalone ProviderRegisterComponent (`src/app/features/admin/provider-register/provider-register.component.ts`):
   - Form inputs for Name and CNPJ/TaxId with validation.
   - Submit action to invoke `CompanyService.registerProvider`.
+>  ✅ 2026-06-29 14:10 - Created ProviderRegisterComponent.
 
 ### Tasks - Routing Setup
 
-- [ ] Wire routing in `src/app/app.routes.ts`:
+- [x] Wire routing in `src/app/app.routes.ts`:
   - `/admin/provedores/detalhes` -> ProviderDetailsComponent
   - `/admin/provedores/novo` -> ProviderRegisterComponent
+>  ✅ 2026-06-29 14:10 - Configured routes.
 
 ### Tasks - Verification & Testing
 
-- [ ] Write Vitest unit tests for `CompanyService` provider operations.
-- [ ] Write Vitest unit tests for `ProviderDetailsComponent` and `ProviderRegisterComponent`.
-- [ ] Run `npm run test` to verify all tests compile and pass.
+- [x] Write Vitest unit tests for `CompanyService` provider operations.
+>  ✅ 2026-06-29 14:10 - Wrote CompanyService provider test specs.
+- [x] Write Vitest unit tests for `ProviderDetailsComponent` and `ProviderRegisterComponent`.
+>  ✅ 2026-06-29 14:10 - Wrote component test specs.
+- [x] Run `npm run test` to verify all tests compile and pass.
+>  ✅ 2026-06-29 14:10 - Verified all tests pass.
 
 ---
 

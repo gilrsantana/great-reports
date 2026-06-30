@@ -40,30 +40,37 @@ We will use:
 
 ### Tasks - Core Services Wrapper
 
-- [ ] Modify `src/app/core/services/user.service.ts` to wrap `apiUsersPost` using the generated client.
+- [x] Modify `src/app/core/services/user.service.ts` to wrap `apiUsersPost` using the generated client.
   - Expose `registerUser(req: RegisterUserRequest): Promise<string>` mapping the result as a Promise using `firstValueFrom`.
+>  ✅ 2026-06-29 14:10 - Implemented registerUser in UserService.
 
 ### Tasks - User Management UI Component
 
-- [ ] Create standalone UserListComponent (`src/app/features/admin/user-list/user-list.component.ts`):
+- [x] Create standalone UserListComponent (`src/app/features/admin/user-list/user-list.component.ts`):
   - Retrieve and display the list of users in a premium data grid.
   - Apply glassmorphism row styles and Outfit headings.
-- [ ] Create standalone UserRegisterComponent (`src/app/features/admin/user-register/user-register.component.ts`):
+>  ✅ 2026-06-29 14:10 - Created UserListComponent.
+- [x] Create standalone UserRegisterComponent (`src/app/features/admin/user-register/user-register.component.ts`):
   - Form validation for Name, Email, and Role selection.
   - Bind submit handler invoking `UserService.registerUser`.
   - Display success/error messages in BR-Portuguese.
+>  ✅ 2026-06-29 14:10 - Created UserRegisterComponent.
 
 ### Tasks - Routing Setup
 
-- [ ] Wire routing in `src/app/app.routes.ts` or child route configurations:
+- [x] Wire routing in `src/app/app.routes.ts` or child route configurations:
   - `/admin/usuarios` -> UserListComponent
   - `/admin/usuarios/novo` -> UserRegisterComponent
+>  ✅ 2026-06-29 14:10 - Configured routes.
 
 ### Tasks - Verification & Testing
 
-- [ ] Write Vitest unit tests for `UserService` mapping and errors.
-- [ ] Write Vitest unit tests for `UserListComponent` and `UserRegisterComponent`.
-- [ ] Run `npm run test` to verify all tests compile and pass.
+- [x] Write Vitest unit tests for `UserService` mapping and errors.
+>  ✅ 2026-06-29 14:10 - Wrote UserService spec tests.
+- [x] Write Vitest unit tests for `UserListComponent` and `UserRegisterComponent`.
+>  ✅ 2026-06-29 14:10 - Wrote component spec tests.
+- [x] Run `npm run test` to verify all tests compile and pass.
+>  ✅ 2026-06-29 14:10 - All unit tests pass.
 
 ---
 

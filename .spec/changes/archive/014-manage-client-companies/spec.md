@@ -40,30 +40,37 @@ We will use:
 
 ### Tasks - Core Services Wrapper
 
-- [ ] Modify `src/app/core/services/company.service.ts` to wrap `apiClientCompaniesPost` and `apiClientCompaniesGet` using the generated client.
+- [x] Modify `src/app/core/services/company.service.ts` to wrap `apiClientCompaniesPost` and `apiClientCompaniesGet` using the generated client.
   - Expose `registerClient(req: RegisterClientCompanyRequest): Promise<string>`.
   - Expose `getClientCompanies(providerId: string, page: number, pageSize: number): Promise<PagedResponse<ClientCompanyDto>>`.
+>  ✅ 2026-06-29 14:10 - Implemented client company operations in CompanyService.
 
 ### Tasks - Client Company UI Components
 
-- [ ] Create standalone ClientListComponent (`src/app/features/admin/client-list/client-list.component.ts`):
+- [x] Create standalone ClientListComponent (`src/app/features/admin/client-list/client-list.component.ts`):
   - Paginated table showing Client Companies (Nome and Identificador).
   - Include pagination controls (Proxima, Anterior).
-- [ ] Create standalone ClientRegisterComponent (`src/app/features/admin/client-register/client-register.component.ts`):
+>  ✅ 2026-06-29 14:10 - Created ClientListComponent.
+- [x] Create standalone ClientRegisterComponent (`src/app/features/admin/client-register/client-register.component.ts`):
   - Form validation for Name.
   - Submit action to invoke `CompanyService.registerClient`.
+>  ✅ 2026-06-29 14:10 - Created ClientRegisterComponent.
 
 ### Tasks - Routing Setup
 
-- [ ] Wire routing in `src/app/app.routes.ts`:
+- [x] Wire routing in `src/app/app.routes.ts`:
   - `/admin/clientes` -> ClientListComponent
   - `/admin/clientes/novo` -> ClientRegisterComponent
+>  ✅ 2026-06-29 14:10 - Configured routes.
 
 ### Tasks - Verification & Testing
 
-- [ ] Write Vitest unit tests for `CompanyService` client operations.
-- [ ] Write Vitest unit tests for `ClientListComponent` and `ClientRegisterComponent`.
-- [ ] Run `npm run test` to verify all tests compile and pass.
+- [x] Write Vitest unit tests for `CompanyService` client operations.
+>  ✅ 2026-06-29 14:10 - Wrote CompanyService client test specs.
+- [x] Write Vitest unit tests for `ClientListComponent` and `ClientRegisterComponent`.
+>  ✅ 2026-06-29 14:10 - Wrote component test specs.
+- [x] Run `npm run test` to verify all tests compile and pass.
+>  ✅ 2026-06-29 14:10 - Verified all tests pass.
 
 ---
 

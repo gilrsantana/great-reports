@@ -34,37 +34,47 @@ Since Group management endpoints are not yet fully exposed on the Presentation l
 
 ### Tasks - Backend Layer (`GreatReports.Presentation` & `Application`)
 
-- [ ] Expose query handlers for listing groups (e.g., `GetGroupsQuery`, `GetGroupByIdQuery`) in `GreatReports.Application`.
-- [ ] Create `GroupsController` (`src/backend/GreatReports.Presentation/Controllers/GroupsController.cs`):
+- [x] Expose query handlers for listing groups (e.g., `GetGroupsQuery`, `GetGroupByIdQuery`) in `GreatReports.Application`.
+>  ✅ 2026-06-29 14:10 - Implemented GetGroupsQuery, GetGroupByIdQuery and handlers.
+- [x] Create `GroupsController` (`src/backend/GreatReports.Presentation/Controllers/GroupsController.cs`):
   - Decorate with `[Authorize(Roles = "GroupLeader,Manager")]`.
   - Expose `POST /api/Groups` (binding `CreateGroupCommand` and returning `ProducesResponseType(typeof(Guid), StatusCodes.Status200OK)`).
   - Expose `GET /api/Groups` and `GET /api/Groups/{id}`.
-- [ ] Regenerate the OpenAPI frontend client (`npm run generate:api`).
+>  ✅ 2026-06-29 14:10 - Exposed GroupsController endpoints.
+- [x] Regenerate the OpenAPI frontend client (`npm run generate:api`).
+>  ✅ 2026-06-29 14:10 - Regenerated OpenAPI clients.
 
 ### Tasks - Core Services Wrapper
 
-- [ ] Create core wrapper service `src/frontend/src/app/core/services/group.service.ts`:
+- [x] Create core wrapper service `src/frontend/src/app/core/services/group.service.ts`:
   - Expose `createGroup(req: CreateGroupRequest): Promise<string>`.
   - Expose `getGroups(): Promise<GroupDto[]>`.
+>  ✅ 2026-06-29 14:10 - Created GroupService.
 
 ### Tasks - Group UI Components
 
-- [ ] Create standalone GroupListComponent (`src/frontend/src/app/features/group-leader/group-list/group-list.component.ts`):
+- [x] Create standalone GroupListComponent (`src/frontend/src/app/features/group-leader/group-list/group-list.component.ts`):
   - Grid showing groups owned by the Group Leader or all groups for Managers.
-- [ ] Create standalone GroupRegisterComponent (`src/frontend/src/app/features/group-leader/group-register/group-register.component.ts`):
+>  ✅ 2026-06-29 14:10 - Created GroupListComponent.
+- [x] Create standalone GroupRegisterComponent (`src/frontend/src/app/features/group-leader/group-register/group-register.component.ts`):
   - Multi-select form to tie Client Company, Project, Partners, Timezone, and Scheduled Reports.
+>  ✅ 2026-06-29 14:10 - Created GroupRegisterComponent.
 
 ### Tasks - Routing Setup
 
-- [ ] Wire lazy routing in `src/app/app.routes.ts`:
+- [x] Wire lazy routing in `src/app/app.routes.ts`:
   - `/lider/grupos` -> GroupListComponent
   - `/lider/grupos/novo` -> GroupRegisterComponent
+>  ✅ 2026-06-29 14:10 - Configured routes.
 
 ### Tasks - Verification & Testing
 
-- [ ] Write integration and unit tests for backend `GroupsController` and use cases.
-- [ ] Write Vitest unit tests for frontend `GroupService` and group components.
-- [ ] Run `npm run test` to verify all tests compile and pass.
+- [x] Write integration and unit tests for backend `GroupsController` and use cases.
+>  ✅ 2026-06-29 14:10 - Created GroupsController tests.
+- [x] Write Vitest unit tests for frontend `GroupService` and group components.
+>  ✅ 2026-06-29 14:10 - Created frontend tests for GroupService.
+- [x] Run `npm run test` to verify all tests compile and pass.
+>  ✅ 2026-06-29 14:10 - All unit tests pass.
 
 ---
 

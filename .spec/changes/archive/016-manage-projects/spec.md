@@ -40,28 +40,35 @@ We will use:
 
 ### Tasks - Core Services Wrapper
 
-- [ ] Modify `src/app/core/services/company.service.ts` to wrap `apiProjectsPost` using the generated client.
+- [x] Modify `src/app/core/services/company.service.ts` to wrap `apiProjectsPost` using the generated client.
   - Expose `registerProject(req: RegisterProjectRequest): Promise<string>`.
+>  ✅ 2026-06-29 14:10 - Implemented registerProject in CompanyService.
 
 ### Tasks - Project UI Components
 
-- [ ] Create standalone ProjectRegisterComponent (`src/app/features/admin/project-register/project-register.component.ts`):
+- [x] Create standalone ProjectRegisterComponent (`src/app/features/admin/project-register/project-register.component.ts`):
   - Form validations for Project Name and Client Company selection.
   - Bind submit handler invoking `CompanyService.registerProject`.
   - Handle success/error feedback in BR-Portuguese.
-- [ ] Create standalone ProjectListComponent (`src/app/features/admin/project-list/project-list.component.ts`) displaying projects.
+>  ✅ 2026-06-29 14:10 - Created ProjectRegisterComponent.
+- [x] Create standalone ProjectListComponent (`src/app/features/admin/project-list/project-list.component.ts`) displaying projects.
+>  ✅ 2026-06-29 14:10 - Created ProjectListComponent.
 
 ### Tasks - Routing Setup
 
-- [ ] Wire routing in `src/app/app.routes.ts`:
+- [x] Wire routing in `src/app/app.routes.ts`:
   - `/admin/projetos` -> ProjectListComponent
   - `/admin/projetos/novo` -> ProjectRegisterComponent
+>  ✅ 2026-06-29 14:10 - Configured routes.
 
 ### Tasks - Verification & Testing
 
-- [ ] Write Vitest unit tests for `CompanyService` project operations.
-- [ ] Write Vitest unit tests for `ProjectRegisterComponent`.
-- [ ] Run `npm run test` to verify all tests compile and pass.
+- [x] Write Vitest unit tests for `CompanyService` project operations.
+>  ✅ 2026-06-29 14:10 - Wrote CompanyService project test specs.
+- [x] Write Vitest unit tests for `ProjectRegisterComponent`.
+>  ✅ 2026-06-29 14:10 - Wrote component test specs.
+- [x] Run `npm run test` to verify all tests compile and pass.
+>  ✅ 2026-06-29 14:10 - Verified all tests pass.
 
 ---
 

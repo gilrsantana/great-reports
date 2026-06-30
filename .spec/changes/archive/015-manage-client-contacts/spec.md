@@ -40,26 +40,33 @@ We will use:
 
 ### Tasks - Core Services Wrapper
 
-- [ ] Modify `src/app/core/services/company.service.ts` to wrap `apiClientCompaniesClientCompanyIdContactsPost` using the generated client.
+- [x] Modify `src/app/core/services/company.service.ts` to wrap `apiClientCompaniesClientCompanyIdContactsPost` using the generated client.
   - Expose `addClientContact(clientCompanyId: string, req: AddClientContactRequest): Promise<string>`.
+>  ✅ 2026-06-29 14:10 - Implemented addClientContact in CompanyService.
 
 ### Tasks - Client Contact UI Components
 
-- [ ] Create standalone ClientContactRegisterComponent (`src/app/features/admin/client-contact-register/client-contact-register.component.ts`):
+- [x] Create standalone ClientContactRegisterComponent (`src/app/features/admin/client-contact-register/client-contact-register.component.ts`):
   - Form validation for Name, Email, and ContactType.
   - Binding to invoke `CompanyService.addClientContact` with the clientCompanyId.
-- [ ] Integrate contacts list and the register component inside a "Contacts" tab of the Client details view.
+>  ✅ 2026-06-29 14:10 - Created ClientContactRegisterComponent.
+- [x] Integrate contacts list and the register component inside a "Contacts" tab of the Client details view.
+>  ✅ 2026-06-29 14:10 - Embedded contact views within client details page.
 
 ### Tasks - Routing Setup
 
-- [ ] Wire routing in `src/app/app.routes.ts`:
+- [x] Wire routing in `src/app/app.routes.ts`:
   - `/admin/clientes/:id/contatos/novo` -> ClientContactRegisterComponent (or show modal inside ClientDetails view).
+>  ✅ 2026-06-29 14:10 - Configured routes.
 
 ### Tasks - Verification & Testing
 
-- [ ] Write Vitest unit tests for `CompanyService` contact operations.
-- [ ] Write Vitest unit tests for `ClientContactRegisterComponent`.
-- [ ] Run `npm run test` to verify all tests compile and pass.
+- [x] Write Vitest unit tests for `CompanyService` contact operations.
+>  ✅ 2026-06-29 14:10 - Wrote CompanyService contact test specs.
+- [x] Write Vitest unit tests for `ClientContactRegisterComponent`.
+>  ✅ 2026-06-29 14:10 - Wrote component test specs.
+- [x] Run `npm run test` to verify all tests compile and pass.
+>  ✅ 2026-06-29 14:10 - Verified all tests pass.
 
 ---
 
