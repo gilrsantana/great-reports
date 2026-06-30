@@ -1,11 +1,24 @@
 ---
 name: setup-identity-and-auth
-description: Set up ASP.NET Core Identity, JWT authentication, token validation, and refresh token rotation in a new .NET Web API project.
+description: Set up ASP.NET Core Identity, JWT authentication, token validation, refresh token rotation, controller endpoints, and background job mail workflows.
 ---
 
 # Skill: Setting Up Identity and JWT Authentication
 
-This skill guides you through setting up ASP.NET Core Identity, JWT Bearer authentication, and refresh token rotation.
+This skill guides you through setting up ASP.NET Core Identity, JWT Bearer authentication, refresh token rotation, presentation controllers, error mapping, and background mail delivery workflows.
+
+---
+
+## Interactive Setup Workflow
+
+Before writing code or planning the authentication setup, you **MUST** ask the user:
+1. **Will it use a background job to send e-mail confirmation?**
+2. **Will it use Hangfire?**
+
+Depending on the choices:
+- **If background job is chosen, but NOT Hangfire**: You must use the dedicated skill [create-background-job](../15-create-background-job/SKILL.md) to implement a native background task queue using `BackgroundService`.
+- **If Hangfire is chosen**: You must use the [hangfire-background-jobs](../14-hangfire-background-jobs/SKILL.md) skill to configure Hangfire and enqueue tasks.
+- **If neither is chosen**: Perform direct, synchronous calls to your email dispatch service (e.g., direct SMTP/API request).
 
 ---
 
@@ -85,20 +98,37 @@ In your Infrastructure project (under `Identity/`), create the Identity entities
 ---
 
 ### 3. Rename Identity Database Tables
-By default, EF Core creates tables named `AspNetUsers`, `AspNetRoles`, etc. Override this behavior by applying Entity Type Configurations in `Persistence/Configurations/` (for each entity you want to rename, you need to create a configuration). Examples:
+By default, EF Core creates tables named `AspNetUsers`, `AspNetRoles`, etc. Override this behavior to rename all Identity tables to use `identity` as a prefix (e.g. `identityRoles`, `identityUsers`) by applying Entity Type Configurations in `Persistence/Configurations/`:
 
 - **AccountConfiguration**:
   ```csharp
-  builder.ToTable("Accounts");
+  builder.ToTable("identityUsers");
   ```
 - **RoleConfiguration**:
   ```csharp
-  builder.ToTable("Roles");
+  builder.ToTable("identityRoles");
   ```
 - **AccountRoleConfiguration**:
   ```csharp
-  builder.ToTable("AccountRoles");
+  builder.ToTable("identityUserRoles");
   ```
+- **AccountClaimConfiguration**:
+  ```csharp
+  builder.ToTable("identityUserClaims");
+  ```
+- **AccountLoginConfiguration**:
+  ```csharp
+  builder.ToTable("identityUserLogins");
+  ```
+- **RoleClaimConfiguration**:
+  ```csharp
+  builder.ToTable("identityRoleClaims");
+  ```
+- **AccountTokenConfiguration**:
+  ```csharp
+  builder.ToTable("identityUserTokens");
+  ```
+
 Apply the configurations using `builder.ApplyConfigurationsFromAssembly` inside the `GreatReportsDbContext` class.
 
 ---
@@ -143,8 +173,7 @@ Add settings to `appsettings.json`:
 ### 5. Wire Identity and Authentication in Dependency Injection
 Open the Infrastructure layer's Dependency Injection config (`DependencyInjection.cs`):
 
-1. **Add Identity Services with Options Pattern**:
-   Configure options from `appsettings.json`:
+1. **Configure Identity Core**:
    ```csharp
    services.Configure<IdentityOptions>(configuration.GetSection("IdentityOptions"));
    services.Configure<DataProtectionTokenProviderOptions>(configuration.GetSection("DataProtectionTokenProviderOptions"));
@@ -156,7 +185,6 @@ Open the Infrastructure layer's Dependency Injection config (`DependencyInjectio
    ```
 
 2. **Configure Authentication & JWT Bearer Options**:
-   Register authentication and bind JWT bearer settings using options pattern:
    ```csharp
    services.Configure<JwtSettings>(configuration.GetSection(JwtSettings.SectionName));
 
@@ -195,14 +223,28 @@ Open the Infrastructure layer's Dependency Injection config (`DependencyInjectio
 ---
 
 ### 6. Implement the IdentityService
-Create an interface `IIdentityService` in the Application layer, and implement it in `GreatReports.Infrastructure/Identity/IdentityService.cs`. Use `UserManager<Account>` and `RoleManager<Role>` to manage credentials:
+Implement the `IIdentityService` interface (defined in the Application layer) inside `GreatReports.Infrastructure/Identity/IdentityService.cs`. It must handle:
+- **`AuthenticateAsync`**: Find account by email, check password using `userManager.CheckPasswordAsync`, verify email is confirmed and account is not locked out, then issue access and refresh tokens.
+- **`ChangePasswordAsync`**: Find account by ID and call `userManager.ChangePasswordAsync`. Map any failures into a `ValidationError` collection.
+- **`GeneratePasswordResetTokenAsync`**: Generate token using `userManager.GeneratePasswordResetTokenAsync`, build the reset URL link, and send the email (synchronously, natively via background queue, or Hangfire).
+- **`ResetPasswordAsync`**: Redefine user password using `userManager.ResetPasswordAsync`.
+- **`RotateTokensAsync`**: Authenticate client refresh token, check expiration, and rotate tokens.
 
-- **GenerateAccessToken**: Generate claims (Sub, Jti, Email, roles) and write the token using `JwtSecurityTokenHandler`.
-- **GenerateRefreshToken**: Create a cryptographically secure random token:
-  ```csharp
-  var randomNumber = new byte[64];
-  using var rng = RandomNumberGenerator.Create();
-  rng.GetBytes(randomNumber);
-  var refreshToken = Convert.ToBase64String(randomNumber);
-  ```
-- **Rotate Tokens**: Upon receiving a validation request, call `GetPrincipalFromExpiredToken`, load the associated `Account`, match the `RefreshToken` and its expiration, and issue a fresh Access Token + rotated Refresh Token.
+---
+
+### 7. Define Controller Endpoints
+Expose these actions in an `AuthController` inheriting from `ApiControllerBase`:
+
+- **Login**: `POST /api/auth/login` (decorated with `[AllowAnonymous]`)
+- **Refresh Token**: `POST /api/auth/refresh-token` (decorated with `[AllowAnonymous]`)
+- **Change Password**: `POST /api/auth/change-password` (decorated with `[Authorize]`)
+- **Forget Password**: `POST /api/auth/forget-password` / `[HttpPost("forgot-password")]` (decorated with `[AllowAnonymous]`)
+- **Reset Password**: `POST /api/auth/reset-password` (decorated with `[AllowAnonymous]`)
+
+---
+
+### 8. Implement Error Status Mapping in ApiControllerBase
+To align with clean architecture guidelines, error handling must occur globally or inside the base API controller. Map domain error codes into HTTP status codes:
+- Match `Auth.InvalidCredentials`, `Auth.InvalidToken`, `Token.Expired`, `Auth.InvalidRefreshToken`, `Auth.EmailNotConfirmed`, `Auth.AccountLocked` -> `401 Unauthorized`
+- Match `NotFound` -> `404 Not Found`
+- Validation errors -> `400 BadRequest` containing validation failures in `ProblemDetails`.

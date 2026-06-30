@@ -16,14 +16,14 @@ This change integrates Hangfire background job configuration into the applicatio
 
 ## Project References
 
-- [Product Definition](../../memory/product.md)
-- [Global Technical Context](../../memory/technical-context.md)
-- [Repository Structure](../../memory/structure.md)
+- [Product Definition](../../../memory/product.md)
+- [Global Technical Context](../../../memory/technical-context.md)
+- [Repository Structure](../../../memory/structure.md)
 
 ## Shared References
 
-- [How to Run](../../shared/how-to-run.md)
-- [Naming Conventions](../../shared/naming-conventions.md)
+- [How to Run](../../../shared/how-to-run.md)
+- [Naming Conventions](../../../shared/naming-conventions.md)
 
 ## Local Observations
 
@@ -77,4 +77,4 @@ This change integrates Hangfire background job configuration into the applicatio
 
 ## Closure
 
-This spec is finished only when all checkboxes are checked and evidence has been recorded in the format defined in [How to Run](../../shared/how-to-run.md).
+This spec is finished only when all checkboxes are checked and evidence has been recorded in the format defined in [How to Run](../../../shared/how-to-run.md).

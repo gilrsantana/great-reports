@@ -27,8 +27,8 @@ timestamp: 2026-06-27T06:08:00-03:00
 | 2026-06-27 | Antigravity | Modified | * (All docs) | Generalized the system domain definitions and diagrams from tech consulting to B2B providers |
 | 2026-06-27 | Antigravity | Modified | [domain-model.md](./diagrams/class/domain-model.md) | Added ActivityStatus, IsBlocked, and Timezone context |
 | 2026-06-27 | Antigravity | Modified | [report-workflow.md](./diagrams/activity/report-workflow.md) | Added Gemini API failure fallback alert path to GL, Managers, and Maintainers |
-| 2026-06-27 | Antigravity | Modified | [product.md](./.spec/memory/product.md) | Added Doing/Done statuses, 4 B2B dashboard chart definitions, and fallback rules |
-| 2026-06-27 | Antigravity | Created | [14-localization.md](./.gemini/rules/14-localization.md) | Added localization rule enforcing Portuguese for all user-facing systems and English for code |
+| 2026-06-27 | Antigravity | Modified | [product.md](../.spec/memory/product.md) | Added Doing/Done statuses, 4 B2B dashboard chart definitions, and fallback rules |
+| 2026-06-27 | Antigravity | Created | [14-localization.md](../.gemini/rules/14-localization.md) | Added localization rule enforcing Portuguese for all user-facing systems and English for code |
 | 2026-06-27 | Antigravity | Modified | * (All specs/docs) | Updated folder structures to place backend under src/backend and frontend under src/frontend |
 
 

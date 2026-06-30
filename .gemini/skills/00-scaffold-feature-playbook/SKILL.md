@@ -26,23 +26,27 @@ Use this playbook when you need to add a new entity or feature to the applicatio
 - [ ] Create the repository inheriting from `BaseEntityRepository<TEntity>`.
   - 👉 *Refer to skill:* [04-create-infrastructure-mapping](../04-create-infrastructure-mapping/SKILL.md)
 
-### 🔌 Phase 4: Dependency Injection Wiring
+### 🚀 Phase 4: Database Migrations
+- [ ] Add and apply EF Core migrations to update your local relational database schema.
+  - 👉 *Refer to skill:* [05-database-migrations](../05-database-migrations/SKILL.md)
+
+### 🔌 Phase 5: Dependency Injection Wiring
 - [ ] Register the CQRS Use Case handlers in `Application/Extensions/DependencyInjection.cs`.
 - [ ] Register the Repository interface mapping in `Infrastructure/Extensions/DependencyInjection.cs`.
-  - 👉 *Refer to skill:* [05-configure-dependency-injection](../05-configure-dependency-injection/SKILL.md)
+  - 👉 *Refer to skill:* [06-configure-dependency-injection](../06-configure-dependency-injection/SKILL.md)
 
-### 🌐 Phase 5: Exposing the API
+### 🌐 Phase 6: Exposing the API
 - [ ] Create the Controller inheriting from `ApiControllerBase`.
 - [ ] Inject Use Case handlers and expose actions using `HandleResult`.
 - [ ] Annotate actions with appropriate `[ProducesResponseType]` OpenAPI attributes.
-  - 👉 *Refer to skill:* [06-create-api-controller](../06-create-api-controller/SKILL.md)
+  - 👉 *Refer to skill:* [07-create-api-controller](../07-create-api-controller/SKILL.md)
 
-### 🧪 Phase 6: Verification and Testing
+### 🧪 Phase 7: Verification and Testing
 - [ ] Write unit tests for domain logic and application handlers using `Moq` for mocks.
-  - 👉 *Refer to skill:* [07-create-unit-test](../07-create-unit-test/SKILL.md)
+  - 👉 *Refer to skill:* [08-create-unit-test](../08-create-unit-test/SKILL.md)
 - [ ] Run `dotnet build` to ensure the entire solution compiles with zero errors.
 
-### 📑 Phase 7: Documentation (OKF Compliance)
+### 📑 Phase 8: Documentation (OKF Compliance)
 - [ ] Document all new domain entities, database tables, and API endpoints.
 - [ ] Ensure all generated/updated markdown files comply with OKF v0.1 guidelines, including YAML frontmatter.
 - [ ] Update the folder `index.md` files and append a log entry to the central `log.md` file.
