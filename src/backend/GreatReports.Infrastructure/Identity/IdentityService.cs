@@ -278,4 +278,19 @@ public class IdentityService(
 
         return principal;
     }
+
+    public async Task<Dictionary<Guid, string>> GetUserRolesAsync(IEnumerable<Guid> userIds)
+    {
+        var result = new Dictionary<Guid, string>();
+        foreach (var id in userIds)
+        {
+            var account = await userManager.FindByIdAsync(id.ToString());
+            if (account != null)
+            {
+                var roles = await userManager.GetRolesAsync(account);
+                result[id] = roles.FirstOrDefault() ?? "Partner";
+            }
+        }
+        return result;
+    }
 }

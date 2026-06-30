@@ -16,3 +16,4 @@ export type { RegisterProviderCompanyRequest } from './models/register-provider-
 export type { RegisterUserRequest } from './models/register-user-request';
 export type { ResetPasswordRequest } from './models/reset-password-request';
 export type { TokenResponse } from './models/token-response';
+export type { UserDto } from './models/user-dto';

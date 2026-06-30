@@ -16,6 +16,13 @@ public class UserRepository : BaseEntityRepository<User>, IUserRepository
             .FirstOrDefaultAsync(u => u.Email == email && u.Active, cancellationToken);
     }
 
+    public async Task<IReadOnlyList<User>> GetByProviderIdAsync(Guid providerId, CancellationToken cancellationToken = default)
+    {
+        return await DbContext.Set<User>()
+            .Where(u => u.ProviderCompanyId == providerId && u.Active)
+            .ToListAsync(cancellationToken);
+    }
+
     public void Delete(User user)
     {
         DbContext.Set<User>().Remove(user);

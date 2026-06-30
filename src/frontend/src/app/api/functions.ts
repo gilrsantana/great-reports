@@ -41,6 +41,10 @@ export type { ApiProviderCompaniesIdGet$Plain$Params as ApiProviderCompaniesIdGe
 export { apiProviderCompaniesIdGet$Plain as apiProviderCompaniesIdGet$Plain } from './fn/provider-companies/api-provider-companies-id-get-plain';
 export type { ApiProviderCompaniesIdGet$Json$Params as ApiProviderCompaniesIdGet$Json$Params } from './fn/provider-companies/api-provider-companies-id-get-json';
 export { apiProviderCompaniesIdGet$Json as apiProviderCompaniesIdGet$Json } from './fn/provider-companies/api-provider-companies-id-get-json';
+export type { ApiUsersGet$Plain$Params as ApiUsersGet$Plain$Params } from './fn/users/api-users-get-plain';
+export { apiUsersGet$Plain as apiUsersGet$Plain } from './fn/users/api-users-get-plain';
+export type { ApiUsersGet$Json$Params as ApiUsersGet$Json$Params } from './fn/users/api-users-get-json';
+export { apiUsersGet$Json as apiUsersGet$Json } from './fn/users/api-users-get-json';
 export type { ApiUsersPost$Plain$Params as ApiUsersPost$Plain$Params } from './fn/users/api-users-post-plain';
 export { apiUsersPost$Plain as apiUsersPost$Plain } from './fn/users/api-users-post-plain';
 export type { ApiUsersPost$Json$Params as ApiUsersPost$Json$Params } from './fn/users/api-users-post-json';

@@ -13,4 +13,5 @@ public interface IIdentityService
     Task<Result> GeneratePasswordResetTokenAsync(string email);
     Task<Result> ResetPasswordAsync(string email, string token, string newPassword);
     Task<Result<TokenResponse>?> RotateTokensAsync(string accessToken, string refreshToken);
+    Task<Dictionary<Guid, string>> GetUserRolesAsync(IEnumerable<Guid> userIds);
 }
