@@ -12,7 +12,6 @@ public class ConfirmEmailCommandHandler(
 {
     public async Task<Result> HandleAsync(ConfirmEmailCommand command, CancellationToken cancellationToken = default)
     {
-        // 1. Search in target user profile
         var user = await userRepository.GetByEmailAsync(command.Email, cancellationToken);
         if (user != null)
         {

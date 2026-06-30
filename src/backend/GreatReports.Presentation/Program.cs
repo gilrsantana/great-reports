@@ -12,3 +12,5 @@ app.UseMiddleware<CustomExceptionHandlingMiddleware>();
 app.UsePresentationPipeline();
 
 app.Run();
+
+public partial class Program { }
