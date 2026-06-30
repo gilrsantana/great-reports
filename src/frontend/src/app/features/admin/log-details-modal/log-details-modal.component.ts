@@ -6,67 +6,8 @@ import { EmailAuditLogDto } from '../../../api/models/email-audit-log-dto';
   selector: 'app-log-details-modal',
   standalone: true,
   imports: [CommonModule],
-  template: `
-    <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm font-['Inter'] animate-fade-in">
-      <div class="relative w-full max-w-3xl bg-[var(--color-bg-primary)] border border-white/10 rounded-2xl p-6 shadow-2xl space-y-6 text-white max-h-[90vh] overflow-y-auto">
-        
-        <!-- Header -->
-        <div class="flex justify-between items-start border-b border-white/10 pb-4">
-          <div>
-            <span
-              class="px-2.5 py-0.5 rounded-full text-xs font-semibold"
-              [ngClass]="{
-                'bg-emerald-500/10 text-emerald-300 border border-emerald-500/20': log.success,
-                'bg-rose-500/10 text-rose-300 border border-rose-500/20': !log.success
-              }"
-            >
-              {{ log.success ? 'Enviado' : 'Falhou' }}
-            </span>
-            <h2 class="text-xl font-bold font-['Outfit'] mt-2">{{ log.subject }}</h2>
-            <p class="text-xs text-[var(--color-text-secondary)] mt-1 font-mono">
-              Enviado em: {{ log.sentAt | date: 'dd/MM/yyyy HH:mm:ss' }}
-            </p>
-          </div>
-          <button (click)="close.emit()" class="text-gray-400 hover:text-white transition-colors cursor-pointer">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-          </button>
-        </div>
-
-        <!-- Details -->
-        <div class="space-y-4 text-sm">
-          <div>
-            <h4 class="text-xs font-semibold text-[var(--color-text-secondary)] uppercase tracking-wider mb-1">Destinatário</h4>
-            <p class="text-white font-medium">{{ log.recipient }}</p>
-          </div>
-
-          <div>
-            <h4 class="text-xs font-semibold text-[var(--color-text-secondary)] uppercase tracking-wider mb-1.5">Corpo do E-mail</h4>
-            <div class="p-4 bg-[var(--color-bg-tertiary)] border border-white/5 rounded-xl max-h-60 overflow-y-auto text-gray-300 font-mono text-xs whitespace-pre-wrap">
-              {{ log.body }}
-            </div>
-          </div>
-
-          <div *ngIf="!log.success && log.errorMessage">
-            <h4 class="text-xs font-semibold text-[var(--color-accent-rose)] uppercase tracking-wider mb-1.5">Detalhes do Erro</h4>
-            <div class="p-4 bg-rose-500/5 border border-rose-500/10 rounded-xl text-rose-200 font-['JetBrains_Mono'] font-mono text-xs whitespace-pre-wrap max-h-40 overflow-y-auto">
-              {{ log.errorMessage }}
-            </div>
-          </div>
-        </div>
-
-        <!-- Footer -->
-        <div class="flex justify-end pt-4 border-t border-white/10">
-          <button
-            (click)="close.emit()"
-            class="px-5 py-2.5 bg-white/5 hover:bg-white/10 border border-white/10 text-white rounded-lg text-sm font-semibold transition-colors cursor-pointer"
-          >
-            Fechar
-          </button>
-        </div>
-
-      </div>
-    </div>
-  `
+  templateUrl: './log-details-modal.component.html',
+  styleUrl: './log-details-modal.component.css'
 })
 export class LogDetailsModalComponent {
   @Input({ required: true }) log!: EmailAuditLogDto;

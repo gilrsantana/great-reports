@@ -1,0 +1,110 @@
+<div class="p-6 min-h-screen bg-[var(--color-bg-primary)] text-white px-4 font-['Inter']">
+  
+  <div class="max-w-2xl mx-auto space-y-6">
+    
+    <!-- Header -->
+    <div class="bg-white/5 border border-white/10 rounded-xl p-6 backdrop-blur-md">
+      <div class="flex justify-between items-center">
+        <div>
+          <h1 class="text-3xl font-extrabold tracking-tight font-['Outfit'] text-white">
+            Cadastrar Novo Usuário
+          </h1>
+          <p class="text-xs text-[var(--color-text-secondary)] mt-2 uppercase tracking-wider">
+            Preencha os dados do colaborador para enviar o link de ativação da conta.
+          </p>
+        </div>
+        <button routerLink="/admin/usuarios" class="px-3.5 py-1.5 bg-white/5 hover:bg-white/10 border border-white/10 text-gray-300 rounded-lg text-sm transition-colors cursor-pointer">
+          Voltar
+        </button>
+      </div>
+    </div>
+
+    <!-- Form Card -->
+    <div class="bg-white/5 border border-white/10 rounded-xl p-6 backdrop-blur-md">
+      
+      <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="space-y-4">
+        
+        <!-- Nome de Exibição -->
+        <div>
+          <label for="displayName" class="block text-xs font-semibold text-[var(--color-text-secondary)] uppercase tracking-wider mb-2">
+            Nome de Exibição
+          </label>
+          <input
+            id="displayName"
+            type="text"
+            formControlName="displayName"
+            class="w-full bg-[var(--color-bg-tertiary)] border border-white/10 focus:border-[var(--color-accent-brand)] rounded-lg px-4 py-2.5 text-white placeholder-gray-500 text-sm focus-visible:ring-2 focus-visible:ring-[var(--color-accent-brand)] focus-visible:outline-none transition-colors"
+            placeholder="Ex: João da Silva"
+          />
+          <div *ngIf="registerForm.get('displayName')?.touched && registerForm.get('displayName')?.invalid" class="text-xs text-[var(--color-accent-rose)] mt-1.5 font-medium">
+            O nome de exibição é obrigatório.
+          </div>
+        </div>
+
+        <!-- E-mail -->
+        <div>
+          <label for="email" class="block text-xs font-semibold text-[var(--color-text-secondary)] uppercase tracking-wider mb-2">
+            Endereço de E-mail
+          </label>
+          <input
+            id="email"
+            type="email"
+            formControlName="email"
+            class="w-full bg-[var(--color-bg-tertiary)] border border-white/10 focus:border-[var(--color-accent-brand)] rounded-lg px-4 py-2.5 text-white placeholder-gray-500 text-sm focus-visible:ring-2 focus-visible:ring-[var(--color-accent-brand)] focus-visible:outline-none transition-colors"
+            placeholder="Ex: joao.silva@empresa.com"
+          />
+          <div *ngIf="registerForm.get('email')?.touched && registerForm.get('email')?.invalid" class="text-xs text-[var(--color-accent-rose)] mt-1.5 font-medium">
+            <span *ngIf="registerForm.get('email')?.errors?.['required']">O e-mail é obrigatório.</span>
+            <span *ngIf="registerForm.get('email')?.errors?.['email']">Insira um e-mail válido.</span>
+          </div>
+        </div>
+
+        <!-- Função (Role) -->
+        <div>
+          <label for="role" class="block text-xs font-semibold text-[var(--color-text-secondary)] uppercase tracking-wider mb-2">
+            Cargo / Função
+          </label>
+          <select
+            id="role"
+            formControlName="role"
+            class="w-full bg-[var(--color-bg-tertiary)] border border-white/10 focus:border-[var(--color-accent-brand)] rounded-lg px-4 py-2.5 text-white text-sm focus-visible:ring-2 focus-visible:ring-[var(--color-accent-brand)] focus-visible:outline-none transition-colors cursor-pointer"
+          >
+            <option value="" disabled selected>Selecione um cargo</option>
+            <option value="Partner">Parceiro (Executor de Atividades)</option>
+            <option value="GroupLeader">Líder de Grupo (Supervisor)</option>
+            <option value="Manager">Gestor (Administrador)</option>
+          </select>
+          <div *ngIf="registerForm.get('role')?.touched && registerForm.get('role')?.invalid" class="text-xs text-[var(--color-accent-rose)] mt-1.5 font-medium">
+            A seleção da função é obrigatória.
+          </div>
+        </div>
+
+        <!-- Messages -->
+        <div *ngIf="error()" class="p-3 bg-[var(--color-accent-rose)]/10 border border-[var(--color-accent-rose)]/25 rounded-lg text-xs text-[var(--color-accent-rose)] font-medium">
+          {{ error() }}
+        </div>
+        <div *ngIf="success()" class="p-3 bg-[var(--color-accent-emerald)]/10 border border-[var(--color-accent-emerald)]/25 rounded-lg text-xs text-[var(--color-accent-emerald)] font-medium">
+          Usuário registrado com sucesso! Um e-mail de ativação foi enviado.
+        </div>
+
+        <!-- Submit Button -->
+        <div class="flex justify-end pt-4">
+          <button
+            type="submit"
+            [disabled]="registerForm.invalid || loading()"
+            class="px-6 py-2.5 bg-[var(--color-accent-brand)] hover:opacity-90 disabled:opacity-50 text-white font-semibold rounded-lg text-sm transition-all shadow-md shadow-indigo-500/10 hover:shadow-indigo-500/20 flex items-center gap-2 cursor-pointer disabled:cursor-not-allowed"
+          >
+            <svg *ngIf="loading()" class="animate-spin h-4 w-4 text-white" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            <span>Cadastrar Usuário</span>
+          </button>
+        </div>
+      </form>
+
+    </div>
+
+  </div>
+
+</div>
