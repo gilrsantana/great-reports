@@ -33,35 +33,43 @@ Since Email Audit Log query endpoints are not yet implemented in Application/Pre
 
 ### Tasks - Backend Layer (`GreatReports.Presentation` & `Application`)
 
-- [ ] Create CQRS Query `GetEmailAuditLogsQuery` in `GreatReports.Application` supporting pagination, status filters, and recipient search.
-- [ ] Create `EmailAuditLogsController` (`src/backend/GreatReports.Presentation/Controllers/EmailAuditLogsController.cs`):
+- [x] Create CQRS Query `GetEmailAuditLogsQuery` in `GreatReports.Application` supporting pagination, status filters, and recipient search.
+>  ✅ 2026-06-30 18:36 - Created GetEmailAuditLogsQuery, EmailAuditLogDto, and query handler querying database using IEmailAuditLogRepository.
+- [x] Create `EmailAuditLogsController` (`src/backend/GreatReports.Presentation/Controllers/EmailAuditLogsController.cs`):
   - Decorate with `[Authorize(Roles = "Maintainer,Manager")]`.
   - Expose `GET /api/EmailAuditLogs` returning `ProducesResponseType(typeof(PagedResponse<EmailAuditLogDto>), StatusCodes.Status200OK)`.
-- [ ] Regenerate the OpenAPI frontend client (`npm run generate:api`).
+>  ✅ 2026-06-30 18:36 - Implemented EmailAuditLogsController returning paginated responses.
+- [x] Regenerate the OpenAPI frontend client (`npm run generate:api`).
+>  ✅ 2026-06-30 18:36 - Regenerated API files using ng-openapi-gen.
 
 ### Tasks - Core Services Wrapper
 
-- [ ] Create core wrapper service `src/frontend/src/app/core/services/email-audit-log.service.ts`:
+- [x] Create core wrapper service `src/frontend/src/app/core/services/email-audit-log.service.ts`:
   - Expose `getEmailLogs(page: number, pageSize: number, filters: LogFilters): Promise<PagedResponse<EmailAuditLogDto>>`.
+>  ✅ 2026-06-30 18:36 - Created EmailAuditLogService to fetch logs.
 
 ### Tasks - Email Audit Logs UI Components
 
-- [ ] Create standalone EmailAuditListComponent (`src/frontend/src/app/features/admin/email-audit-list/email-audit-list.component.ts`):
+- [x] Create standalone EmailAuditListComponent (`src/frontend/src/app/features/admin/email-audit-list/email-audit-list.component.ts`):
   - Paginated table showing: Data/Hora, Destinatário, Assunto, Status (badge styling: Success/Failed).
   - Search fields to filter by Destinatário or Status.
-- [ ] Create standalone LogDetailsModalComponent (`src/frontend/src/app/features/admin/log-details-modal/log-details-modal.component.ts`):
+>  ✅ 2026-06-30 18:36 - Created EmailAuditListComponent with filters, pagination, and details modal link.
+- [x] Create standalone LogDetailsModalComponent (`src/frontend/src/app/features/admin/log-details-modal/log-details-modal.component.ts`):
   - Modal displaying full log details and raw error details (using `JetBrains Mono` formatting).
+>  ✅ 2026-06-30 18:36 - Created LogDetailsModalComponent using JetBrains Mono formatting for error stack trace.
 
 ### Tasks - Routing Setup
 
-- [ ] Wire lazy routing in `src/app/app.routes.ts`:
+- [x] Wire lazy routing in `src/app/app.routes.ts`:
   - `/admin/logs-email` -> EmailAuditListComponent
+>  ✅ 2026-06-30 18:36 - Integrated route `/admin/logs-email`.
 
 ### Tasks - Verification & Testing
 
-- [ ] Write integration and unit tests for backend `EmailAuditLogsController`.
-- [ ] Write Vitest unit tests for frontend `EmailAuditLogService` and logs list component.
-- [ ] Run `npm run test` to verify all tests compile and pass.
+- [x] Write integration and unit tests for backend `EmailAuditLogsController`.
+- [x] Write Vitest unit tests for frontend `EmailAuditLogService` and logs list component.
+- [x] Run `npm run test` to verify all tests compile and pass.
+>  ✅ 2026-06-30 18:36 - Created EmailAuditLogQueryTests.cs in backend, email-audit-log.service.spec.ts in frontend, and ran build/tests cleanly.
 
 ---
 

@@ -71,6 +71,11 @@ export const routes: Routes = [
     canActivate: [authGuard]
   },
   {
+    path: 'admin/logs-email',
+    loadComponent: () => import('./features/admin/email-audit-list/email-audit-list.component').then(m => m.EmailAuditListComponent),
+    canActivate: [authGuard]
+  },
+  {
     path: 'lider/grupos',
     loadComponent: () => import('./features/group-leader/group-list/group-list.component').then(m => m.GroupListComponent),
     canActivate: [authGuard]

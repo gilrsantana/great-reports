@@ -1,0 +1,253 @@
+import { Component, OnInit, inject, signal } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule, ReactiveFormsModule, FormBuilder } from '@angular/forms';
+import { EmailAuditLogService } from '../../../core/services/email-audit-log.service';
+import { EmailAuditLogDto } from '../../../api/models/email-audit-log-dto';
+import { LogDetailsModalComponent } from '../log-details-modal/log-details-modal.component';
+
+@Component({
+  selector: 'app-email-audit-list',
+  standalone: true,
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, LogDetailsModalComponent],
+  template: `
+    <div class="p-6 min-h-screen bg-[var(--color-bg-primary)] text-white px-4 font-['Inter']">
+      <div class="max-w-6xl mx-auto space-y-6">
+        
+        <!-- Top Header Panel -->
+        <div class="bg-white/5 border border-white/10 rounded-xl p-6 backdrop-blur-md flex justify-between items-center animate-fade-in">
+          <div>
+            <h1 class="text-3xl font-extrabold tracking-tight font-['Outfit'] text-white">Auditoria de E-mails</h1>
+            <p class="text-xs text-[var(--color-text-secondary)] mt-2 uppercase tracking-wider">
+              Monitore registros de entrega de relatórios e resumos por e-mail.
+            </p>
+          </div>
+        </div>
+
+        <!-- Filter Panel -->
+        <div class="bg-white/5 border border-white/10 rounded-xl p-6 backdrop-blur-md">
+          <form [formGroup]="filterForm" (ngSubmit)="applyFilters()" class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+            <div class="md:col-span-2">
+              <label for="recipient" class="block text-xs font-semibold text-[var(--color-text-secondary)] uppercase tracking-wider mb-2">
+                Destinatário
+              </label>
+              <input
+                id="recipient"
+                type="text"
+                formControlName="recipient"
+                placeholder="Filtrar por e-mail do destinatário..."
+                class="w-full bg-[var(--color-bg-tertiary)] border border-white/10 focus:border-[var(--color-accent-brand)] rounded-lg px-3 py-2 text-white placeholder-gray-500 text-sm focus-visible:outline-none transition-colors"
+              />
+            </div>
+
+            <div>
+              <label for="status" class="block text-xs font-semibold text-[var(--color-text-secondary)] uppercase tracking-wider mb-2">
+                Status
+              </label>
+              <select
+                id="status"
+                formControlName="status"
+                class="w-full bg-[var(--color-bg-tertiary)] border border-white/10 focus:border-[var(--color-accent-brand)] rounded-lg px-3 py-2 text-white text-sm focus-visible:outline-none transition-colors"
+              >
+                <option value="">Todos</option>
+                <option value="true">Enviado</option>
+                <option value="false">Falhou</option>
+              </select>
+            </div>
+
+            <div class="flex gap-2">
+              <button
+                type="submit"
+                class="flex-1 py-2 bg-white/10 hover:bg-white/15 border border-white/10 text-white rounded-lg text-sm font-semibold transition-colors cursor-pointer"
+              >
+                Filtrar
+              </button>
+              <button
+                type="button"
+                (click)="clearFilters()"
+                class="px-3 py-2 bg-white/5 hover:bg-white/10 border border-white/10 text-gray-400 hover:text-white rounded-lg text-sm transition-colors cursor-pointer"
+              >
+                Limpar
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Logs Table Card -->
+        <div class="bg-white/5 border border-white/10 rounded-xl overflow-hidden backdrop-blur-md">
+          
+          <!-- Loading Spinner -->
+          <div *ngIf="loading()" class="py-12 flex justify-center items-center text-gray-400">
+            <svg class="animate-spin h-8 w-8 text-[var(--color-accent-brand)] mr-3" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            <span>Carregando logs de auditoria...</span>
+          </div>
+
+          <!-- Empty State -->
+          <div *ngIf="!loading() && logs().length === 0" class="py-16 text-center text-gray-400 border border-dashed border-white/5 rounded-lg m-6">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto text-gray-600 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+            </svg>
+            <p class="font-semibold text-white">Nenhum registro de e-mail encontrado</p>
+            <p class="text-sm text-gray-500 mt-1">Nenhum log corresponde aos filtros ou nenhum e-mail foi disparado ainda.</p>
+          </div>
+
+          <!-- Table -->
+          <div *ngIf="!loading() && logs().length > 0" class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr class="border-b border-white/10 bg-white/5">
+                  <th class="p-4 text-xs font-bold uppercase tracking-wider text-[var(--color-text-secondary)]">Data / Hora</th>
+                  <th class="p-4 text-xs font-bold uppercase tracking-wider text-[var(--color-text-secondary)]">Destinatário</th>
+                  <th class="p-4 text-xs font-bold uppercase tracking-wider text-[var(--color-text-secondary)]">Assunto</th>
+                  <th class="p-4 text-xs font-bold uppercase tracking-wider text-[var(--color-text-secondary)]">Status</th>
+                  <th class="p-4 text-xs font-bold uppercase tracking-wider text-[var(--color-text-secondary)] text-right">Ações</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-white/5">
+                <tr *ngFor="let log of logs()" class="hover:bg-white/5 transition-colors">
+                  <td class="p-4 text-sm font-['JetBrains_Mono'] font-mono text-gray-300">
+                    {{ log.sentAt | date: 'dd/MM/yyyy HH:mm:ss' }}
+                  </td>
+                  <td class="p-4 text-sm font-semibold text-white">
+                    {{ log.recipient }}
+                  </td>
+                  <td class="p-4 text-sm text-gray-300">
+                    {{ log.subject }}
+                  </td>
+                  <td class="p-4 text-sm">
+                    <span
+                      class="px-2.5 py-0.5 rounded-full text-xs font-semibold"
+                      [ngClass]="{
+                        'bg-emerald-500/10 text-emerald-300 border border-emerald-500/20': log.success,
+                        'bg-rose-500/10 text-rose-300 border border-rose-500/20': !log.success
+                      }"
+                    >
+                      {{ log.success ? 'Enviado' : 'Falhou' }}
+                    </span>
+                  </td>
+                  <td class="p-4 text-sm text-right">
+                    <button
+                      (click)="selectedLog.set(log)"
+                      class="px-3 py-1.5 bg-white/5 hover:bg-white/10 border border-white/10 text-white rounded text-xs font-semibold transition-colors cursor-pointer"
+                    >
+                      Ver Detalhes
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Pagination Bar -->
+          <div *ngIf="!loading() && logs().length > 0" class="p-4 bg-white/5 border-t border-white/10 flex justify-between items-center text-sm">
+            <span class="text-[var(--color-text-secondary)]">
+              Página {{ currentPage() }} de {{ totalPages() }} (Total de {{ totalItems() }} logs)
+            </span>
+            <div class="flex gap-2">
+              <button
+                (click)="prevPage()"
+                [disabled]="currentPage() === 1"
+                class="px-3.5 py-1.5 bg-white/5 hover:bg-white/10 disabled:opacity-40 border border-white/10 rounded text-xs font-semibold cursor-pointer"
+              >
+                Anterior
+              </button>
+              <button
+                (click)="nextPage()"
+                [disabled]="currentPage() === totalPages()"
+                class="px-3.5 py-1.5 bg-white/5 hover:bg-white/10 disabled:opacity-40 border border-white/10 rounded text-xs font-semibold cursor-pointer"
+              >
+                Próxima
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Details Modal -->
+    <app-log-details-modal
+      *ngIf="selectedLog() as log"
+      [log]="log"
+      (close)="selectedLog.set(null)"
+    ></app-log-details-modal>
+  `
+})
+export class EmailAuditListComponent implements OnInit {
+  private readonly emailAuditLogService = inject(EmailAuditLogService);
+  private readonly fb = inject(FormBuilder);
+
+  readonly logs = signal<EmailAuditLogDto[]>([]);
+  readonly loading = signal(false);
+  readonly selectedLog = signal<EmailAuditLogDto | null>(null);
+
+  readonly currentPage = signal(1);
+  readonly pageSize = 10;
+  readonly totalPages = signal(1);
+  readonly totalItems = signal(0);
+
+  filterForm = this.fb.group({
+    recipient: [''],
+    status: ['']
+  });
+
+  async ngOnInit() {
+    await this.loadLogs();
+  }
+
+  async loadLogs() {
+    this.loading.set(true);
+
+    const val = this.filterForm.value;
+    const recipient = val.recipient || undefined;
+    let success: boolean | undefined = undefined;
+    if (val.status === 'true') success = true;
+    if (val.status === 'false') success = false;
+
+    try {
+      const response = await this.emailAuditLogService.getEmailLogs(this.currentPage(), this.pageSize, {
+        recipient,
+        success
+      });
+
+      this.logs.set(response.items || []);
+      this.totalPages.set(Number(response.totalPages) || 1);
+      this.totalItems.set(Number(response.totalCount) || 0);
+    } catch (e) {
+      console.error(e);
+      alert('Erro ao carregar registros de auditoria de e-mails.');
+    } finally {
+      this.loading.set(false);
+    }
+  }
+
+  async applyFilters() {
+    this.currentPage.set(1);
+    await this.loadLogs();
+  }
+
+  async clearFilters() {
+    this.filterForm.reset({
+      recipient: '',
+      status: ''
+    });
+    this.currentPage.set(1);
+    await this.loadLogs();
+  }
+
+  async prevPage() {
+    if (this.currentPage() > 1) {
+      this.currentPage.set(this.currentPage() - 1);
+      await this.loadLogs();
+    }
+  }
+
+  async nextPage() {
+    if (this.currentPage() < this.totalPages()) {
+      this.currentPage.set(this.currentPage() + 1);
+      await this.loadLogs();
+    }
+  }
+}

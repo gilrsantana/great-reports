@@ -51,6 +51,10 @@ export type { ApiDailyActivitiesLockoutStatusGet$Plain$Params as ApiDailyActivit
 export { apiDailyActivitiesLockoutStatusGet$Plain as apiDailyActivitiesLockoutStatusGet$Plain } from './fn/daily-activities/api-daily-activities-lockout-status-get-plain';
 export type { ApiDailyActivitiesLockoutStatusGet$Json$Params as ApiDailyActivitiesLockoutStatusGet$Json$Params } from './fn/daily-activities/api-daily-activities-lockout-status-get-json';
 export { apiDailyActivitiesLockoutStatusGet$Json as apiDailyActivitiesLockoutStatusGet$Json } from './fn/daily-activities/api-daily-activities-lockout-status-get-json';
+export type { ApiEmailAuditLogsGet$Plain$Params as ApiEmailAuditLogsGet$Plain$Params } from './fn/email-audit-logs/api-email-audit-logs-get-plain';
+export { apiEmailAuditLogsGet$Plain as apiEmailAuditLogsGet$Plain } from './fn/email-audit-logs/api-email-audit-logs-get-plain';
+export type { ApiEmailAuditLogsGet$Json$Params as ApiEmailAuditLogsGet$Json$Params } from './fn/email-audit-logs/api-email-audit-logs-get-json';
+export { apiEmailAuditLogsGet$Json as apiEmailAuditLogsGet$Json } from './fn/email-audit-logs/api-email-audit-logs-get-json';
 export type { ApiGroupsGet$Plain$Params as ApiGroupsGet$Plain$Params } from './fn/groups/api-groups-get-plain';
 export { apiGroupsGet$Plain as apiGroupsGet$Plain } from './fn/groups/api-groups-get-plain';
 export type { ApiGroupsGet$Json$Params as ApiGroupsGet$Json$Params } from './fn/groups/api-groups-get-json';

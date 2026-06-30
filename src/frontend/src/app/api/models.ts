@@ -13,10 +13,12 @@ export type { CreateDailyActivityRequest } from './models/create-daily-activity-
 export type { CreateGroupRequest } from './models/create-group-request';
 export type { CreateScheduledEmailRequest } from './models/create-scheduled-email-request';
 export type { DailyActivityDto } from './models/daily-activity-dto';
+export type { EmailAuditLogDto } from './models/email-audit-log-dto';
 export type { ForgetPasswordRequest } from './models/forget-password-request';
 export type { GroupDto } from './models/group-dto';
 export type { LoginRequest } from './models/login-request';
 export type { PagedResponseOfClientCompanyDto } from './models/paged-response-of-client-company-dto';
+export type { PagedResponseOfEmailAuditLogDto } from './models/paged-response-of-email-audit-log-dto';
 export type { ProviderDetailsDto } from './models/provider-details-dto';
 export type { RefreshTokenRequest } from './models/refresh-token-request';
 export type { RegisterClientCompanyRequest } from './models/register-client-company-request';
