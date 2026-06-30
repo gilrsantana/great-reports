@@ -127,6 +127,7 @@ public static class DependencyInjection
             throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
         }
 
+        connectionString = CleanConnectionString(connectionString, isHangfire: false);
         var dbOptions = configuration.GetSection(DatabaseOptions.SectionName).Get<DatabaseOptions>() ?? new DatabaseOptions();
 
         services.AddDbContext<GreatReportsDbContext>(options =>
@@ -211,6 +212,8 @@ public static class DependencyInjection
             var connectionString = configuration.GetConnectionString("DefaultConnection")
                 ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 
+            connectionString = CleanConnectionString(connectionString, isHangfire: true);
+
             config
                 .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
                 .UseSimpleAssemblyNameTypeSerializer()
@@ -232,5 +235,37 @@ public static class DependencyInjection
         services.AddHangfireServer(options => options.WorkerCount = 2);
 
         return services;
+    }
+
+    private static string CleanConnectionString(string connectionString, bool isHangfire)
+    {
+        var cleaned = connectionString;
+
+        if (isHangfire)
+        {
+            // MySqlConnector (used by Hangfire) expects SslMode=None (Disabled is not supported)
+            if (cleaned.Contains("SslMode=Disabled", StringComparison.OrdinalIgnoreCase))
+            {
+                cleaned = cleaned.Replace("SslMode=Disabled", "SslMode=None", StringComparison.OrdinalIgnoreCase);
+            }
+            
+            // Hangfire.MySqlStorage requires "Allow User Variables=True"
+            if (!cleaned.Contains("Allow User Variables=True", StringComparison.OrdinalIgnoreCase))
+            {
+                if (!cleaned.EndsWith(";")) cleaned += ";";
+                cleaned += "Allow User Variables=True;";
+            }
+        }
+        else
+        {
+            // Oracle's MySql.Data 9.5.0+ (used by MySql.EntityFrameworkCore) removed SslMode=None, throwing an ArgumentException.
+            // We must use SslMode=Disabled for the EF Core connection.
+            if (cleaned.Contains("SslMode=None", StringComparison.OrdinalIgnoreCase))
+            {
+                cleaned = cleaned.Replace("SslMode=None", "SslMode=Disabled", StringComparison.OrdinalIgnoreCase);
+            }
+        }
+
+        return cleaned;
     }
 }
