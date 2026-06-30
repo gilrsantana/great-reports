@@ -27,6 +27,7 @@ public class AuthController(
 
     [HttpPost("login")]
     [AllowAnonymous]
+    [ProducesResponseType(typeof(TokenResponse), StatusCodes.Status200OK)]
     public async Task<IActionResult> Login([FromBody] LoginRequest request, CancellationToken cancellationToken)
     {
         var command = new LoginCommand(request.Email, request.Password);
@@ -36,6 +37,7 @@ public class AuthController(
 
     [HttpPost("refresh-token")]
     [AllowAnonymous]
+    [ProducesResponseType(typeof(TokenResponse), StatusCodes.Status200OK)]
     public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenRequest request, CancellationToken cancellationToken)
     {
         var command = new RefreshTokenCommand(request.AccessToken, request.RefreshToken);

@@ -17,6 +17,7 @@ public class ProjectsController : ApiControllerBase
     }
 
     [HttpPost]
+    [ProducesResponseType(typeof(Guid), StatusCodes.Status200OK)]
     public async Task<IActionResult> Register([FromBody] RegisterProjectRequest request, CancellationToken cancellationToken)
     {
         var command = new RegisterProjectCommand(request.ClientCompanyId, request.Name, request.Description);

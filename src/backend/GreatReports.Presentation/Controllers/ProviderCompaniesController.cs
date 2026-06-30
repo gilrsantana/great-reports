@@ -22,6 +22,7 @@ public class ProviderCompaniesController : ApiControllerBase
     }
 
     [HttpPost]
+    [ProducesResponseType(typeof(Guid), StatusCodes.Status200OK)]
     public async Task<IActionResult> Register([FromBody] RegisterProviderCompanyRequest request, CancellationToken cancellationToken)
     {
         var command = new RegisterProviderCompanyCommand(request.Name, request.TaxId);
@@ -30,6 +31,7 @@ public class ProviderCompaniesController : ApiControllerBase
     }
 
     [HttpGet("{id:guid}")]
+    [ProducesResponseType(typeof(ProviderDetailsDto), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetDetails(Guid id, CancellationToken cancellationToken)
     {
         var query = new GetProviderDetailsQuery(id);

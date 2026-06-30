@@ -16,6 +16,7 @@ public class ClientCompaniesController(
     ICommandHandler<AddClientContactCommand, Guid> addContactHandler) : ApiControllerBase
 {
     [HttpPost]
+    [ProducesResponseType(typeof(Guid), StatusCodes.Status200OK)]
     public async Task<IActionResult> Register([FromBody] RegisterClientCompanyRequest request, CancellationToken cancellationToken)
     {
         var command = new RegisterClientCompanyCommand(request.ProviderCompanyId, request.Name);
@@ -24,6 +25,7 @@ public class ClientCompaniesController(
     }
 
     [HttpGet]
+    [ProducesResponseType(typeof(PagedResponse<ClientCompanyDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetPaged(
         [FromQuery] Guid providerId,
         [FromQuery] int page = 1,
@@ -36,6 +38,7 @@ public class ClientCompaniesController(
     }
 
     [HttpPost("{clientCompanyId:guid}/contacts")]
+    [ProducesResponseType(typeof(Guid), StatusCodes.Status200OK)]
     public async Task<IActionResult> AddContact(
         Guid clientCompanyId,
         [FromBody] AddClientContactRequest request,

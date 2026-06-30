@@ -10,6 +10,7 @@ namespace GreatReports.Presentation.Controllers;
 public class UsersController(ICommandHandler<RegisterUserCommand, Guid> registerHandler) : ApiControllerBase
 {
     [HttpPost]
+    [ProducesResponseType(typeof(Guid), StatusCodes.Status200OK)]
     public async Task<IActionResult> Register([FromBody] RegisterUserRequest request, CancellationToken cancellationToken)
     {
         var command = new RegisterUserCommand(request.ProviderCompanyId, request.DisplayName, request.Email, request.Role);
