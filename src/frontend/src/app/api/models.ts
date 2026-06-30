@@ -3,6 +3,7 @@
 
 export type { ActivityStatus } from './models/activity-status';
 export type { AddClientContactRequest } from './models/add-client-contact-request';
+export type { AddScheduledEmailReceiverRequest } from './models/add-scheduled-email-receiver-request';
 export type { ChangePasswordRequest } from './models/change-password-request';
 export type { ClientCompanyDto } from './models/client-company-dto';
 export type { ClientContactDto } from './models/client-contact-dto';
@@ -10,6 +11,7 @@ export type { ConfirmEmailRequest } from './models/confirm-email-request';
 export type { ContactType } from './models/contact-type';
 export type { CreateDailyActivityRequest } from './models/create-daily-activity-request';
 export type { CreateGroupRequest } from './models/create-group-request';
+export type { CreateScheduledEmailRequest } from './models/create-scheduled-email-request';
 export type { DailyActivityDto } from './models/daily-activity-dto';
 export type { ForgetPasswordRequest } from './models/forget-password-request';
 export type { GroupDto } from './models/group-dto';
@@ -21,7 +23,10 @@ export type { RegisterClientCompanyRequest } from './models/register-client-comp
 export type { RegisterProjectRequest } from './models/register-project-request';
 export type { RegisterProviderCompanyRequest } from './models/register-provider-company-request';
 export type { RegisterUserRequest } from './models/register-user-request';
+export type { ReportFrequency } from './models/report-frequency';
 export type { ResetPasswordRequest } from './models/reset-password-request';
+export type { ScheduledEmailDto } from './models/scheduled-email-dto';
+export type { ScheduledEmailReceiverDto } from './models/scheduled-email-receiver-dto';
 export type { TokenResponse } from './models/token-response';
 export type { UpdateDailyActivityRequest } from './models/update-daily-activity-request';
 export type { UserDto } from './models/user-dto';

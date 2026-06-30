@@ -65,7 +65,9 @@ public static class DependencyInjection
                 .AddScoped<IGroupRepository, GroupRepository>()
                 .AddScoped<IDailyActivityRepository, DailyActivityRepository>()
                 .AddScoped<IClientContactRepository, ClientContactRepository>()
-                .AddScoped<IEmailAuditLogRepository, EmailAuditLogRepository>();
+                .AddScoped<IEmailAuditLogRepository, EmailAuditLogRepository>()
+                .AddScoped<IScheduledEmailRepository, ScheduledEmailRepository>()
+                .AddScoped<IScheduledEmailReceiverRepository, ScheduledEmailReceiverRepository>();
     }
 
     private static IServiceCollection ConfigureHttpClient(this IServiceCollection services)

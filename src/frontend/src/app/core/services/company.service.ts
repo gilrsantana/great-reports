@@ -9,7 +9,8 @@ import {
   apiClientCompaniesPost$Json,
   apiClientCompaniesGet$Json,
   apiClientCompaniesClientCompanyIdContactsPost$Json,
-  apiProjectsPost$Json
+  apiProjectsPost$Json,
+  apiClientCompaniesClientCompanyIdContactsGet$Json
 } from '../../api/functions';
 import { RegisterProviderCompanyRequest } from '../../api/models/register-provider-company-request';
 import { ProviderDetailsDto } from '../../api/models/provider-details-dto';
@@ -61,5 +62,9 @@ export class CompanyService {
 
   async registerProject(req: RegisterProjectRequest): Promise<string> {
     return await this.api.invoke(apiProjectsPost$Json, { body: req });
+  }
+
+  async getClientContacts(clientCompanyId: string): Promise<any[]> {
+    return await this.api.invoke(apiClientCompaniesClientCompanyIdContactsGet$Json, { clientCompanyId });
   }
 }

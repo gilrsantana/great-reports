@@ -1016,6 +1016,150 @@
         }
       }
     },
+    "/api/ScheduledEmails": {
+      "post": {
+        "tags": [
+          "ScheduledEmails"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateScheduledEmailRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateScheduledEmailRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateScheduledEmailRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "format": "uuid"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "uuid"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "uuid"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/ScheduledEmails/{id}/receivers": {
+      "post": {
+        "tags": [
+          "ScheduledEmails"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddScheduledEmailReceiverRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddScheduledEmailReceiverRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddScheduledEmailReceiverRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/ScheduledEmails/group/{groupId}": {
+      "get": {
+        "tags": [
+          "ScheduledEmails"
+        ],
+        "parameters": [
+          {
+            "name": "groupId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ScheduledEmailDto"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ScheduledEmailDto"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ScheduledEmailDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/Users": {
       "post": {
         "tags": [
@@ -1136,6 +1280,26 @@
           },
           "contactType": {
             "type": "string"
+          }
+        }
+      },
+      "AddScheduledEmailReceiverRequest": {
+        "required": [
+          "userId",
+          "clientContactId"
+        ],
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "clientContactId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
           }
         }
       },
@@ -1276,6 +1440,40 @@
           },
           "timezone": {
             "type": "string"
+          }
+        }
+      },
+      "CreateScheduledEmailRequest": {
+        "required": [
+          "groupId",
+          "name",
+          "cronExpression",
+          "frequency",
+          "specificDayOfMonth"
+        ],
+        "type": "object",
+        "properties": {
+          "groupId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "cronExpression": {
+            "type": "string"
+          },
+          "frequency": {
+            "$ref": "#/components/schemas/ReportFrequency"
+          },
+          "specificDayOfMonth": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
           }
         }
       },
@@ -1550,6 +1748,9 @@
           }
         }
       },
+      "ReportFrequency": {
+        "type": "integer"
+      },
       "ResetPasswordRequest": {
         "required": [
           "email",
@@ -1566,6 +1767,99 @@
           },
           "newPassword": {
             "type": "string"
+          }
+        }
+      },
+      "ScheduledEmailDto": {
+        "required": [
+          "id",
+          "groupId",
+          "name",
+          "cronExpression",
+          "frequency",
+          "specificDayOfMonth",
+          "receivers"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "groupId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "cronExpression": {
+            "type": "string"
+          },
+          "frequency": {
+            "$ref": "#/components/schemas/ReportFrequency"
+          },
+          "specificDayOfMonth": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "receivers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ScheduledEmailReceiverDto"
+            }
+          }
+        }
+      },
+      "ScheduledEmailReceiverDto": {
+        "required": [
+          "id",
+          "userId",
+          "userDisplayName",
+          "userEmail",
+          "clientContactId",
+          "clientContactName",
+          "clientContactEmail"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "userId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "userDisplayName": {
+            "type": "string"
+          },
+          "userEmail": {
+            "type": "string"
+          },
+          "clientContactId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
+          },
+          "clientContactName": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "clientContactEmail": {
+            "type": [
+              "null",
+              "string"
+            ]
           }
         }
       },
@@ -1669,6 +1963,9 @@
     },
     {
       "name": "ProviderCompanies"
+    },
+    {
+      "name": "ScheduledEmails"
     },
     {
       "name": "Users"

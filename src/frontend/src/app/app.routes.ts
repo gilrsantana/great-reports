@@ -81,6 +81,11 @@ export const routes: Routes = [
     canActivate: [authGuard]
   },
   {
+    path: 'lider/grupos/:id',
+    loadComponent: () => import('./features/group-leader/group-details/group-details.component').then(m => m.GroupDetailsComponent),
+    canActivate: [authGuard]
+  },
+  {
     path: 'parceiro/atividades',
     loadComponent: () => import('./features/partner/activity-history/activity-history.component').then(m => m.ActivityHistoryComponent),
     canActivate: [authGuard]

@@ -75,6 +75,16 @@ export type { ApiProviderCompaniesIdGet$Plain$Params as ApiProviderCompaniesIdGe
 export { apiProviderCompaniesIdGet$Plain as apiProviderCompaniesIdGet$Plain } from './fn/provider-companies/api-provider-companies-id-get-plain';
 export type { ApiProviderCompaniesIdGet$Json$Params as ApiProviderCompaniesIdGet$Json$Params } from './fn/provider-companies/api-provider-companies-id-get-json';
 export { apiProviderCompaniesIdGet$Json as apiProviderCompaniesIdGet$Json } from './fn/provider-companies/api-provider-companies-id-get-json';
+export type { ApiScheduledEmailsPost$Plain$Params as ApiScheduledEmailsPost$Plain$Params } from './fn/scheduled-emails/api-scheduled-emails-post-plain';
+export { apiScheduledEmailsPost$Plain as apiScheduledEmailsPost$Plain } from './fn/scheduled-emails/api-scheduled-emails-post-plain';
+export type { ApiScheduledEmailsPost$Json$Params as ApiScheduledEmailsPost$Json$Params } from './fn/scheduled-emails/api-scheduled-emails-post-json';
+export { apiScheduledEmailsPost$Json as apiScheduledEmailsPost$Json } from './fn/scheduled-emails/api-scheduled-emails-post-json';
+export type { ApiScheduledEmailsIdReceiversPost$Params as ApiScheduledEmailsIdReceiversPost$Params } from './fn/scheduled-emails/api-scheduled-emails-id-receivers-post';
+export { apiScheduledEmailsIdReceiversPost as apiScheduledEmailsIdReceiversPost } from './fn/scheduled-emails/api-scheduled-emails-id-receivers-post';
+export type { ApiScheduledEmailsGroupGroupIdGet$Plain$Params as ApiScheduledEmailsGroupGroupIdGet$Plain$Params } from './fn/scheduled-emails/api-scheduled-emails-group-group-id-get-plain';
+export { apiScheduledEmailsGroupGroupIdGet$Plain as apiScheduledEmailsGroupGroupIdGet$Plain } from './fn/scheduled-emails/api-scheduled-emails-group-group-id-get-plain';
+export type { ApiScheduledEmailsGroupGroupIdGet$Json$Params as ApiScheduledEmailsGroupGroupIdGet$Json$Params } from './fn/scheduled-emails/api-scheduled-emails-group-group-id-get-json';
+export { apiScheduledEmailsGroupGroupIdGet$Json as apiScheduledEmailsGroupGroupIdGet$Json } from './fn/scheduled-emails/api-scheduled-emails-group-group-id-get-json';
 export type { ApiUsersGet$Plain$Params as ApiUsersGet$Plain$Params } from './fn/users/api-users-get-plain';
 export { apiUsersGet$Plain as apiUsersGet$Plain } from './fn/users/api-users-get-plain';
 export type { ApiUsersGet$Json$Params as ApiUsersGet$Json$Params } from './fn/users/api-users-get-json';

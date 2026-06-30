@@ -33,38 +33,45 @@ Since Scheduled Email and Receiver endpoints are not yet fully mapped in Applica
 
 ### Tasks - Backend Layer (`GreatReports.Presentation` & `Application`)
 
-- [ ] Create CQRS commands and queries:
+- [x] Create CQRS commands and queries:
   - Commands: `CreateScheduledEmailCommand`, `AddScheduledEmailReceiverCommand`.
   - Queries: `GetGroupScheduledEmailsQuery`.
-- [ ] Create `ScheduledEmailsController` (`src/backend/GreatReports.Presentation/Controllers/ScheduledEmailsController.cs`):
+>  ✅ 2026-06-30 18:32 - Implemented CreateScheduledEmailCommand, AddScheduledEmailReceiverCommand, and GetGroupScheduledEmailsQuery.
+- [x] Create `ScheduledEmailsController` (`src/backend/GreatReports.Presentation/Controllers/ScheduledEmailsController.cs`):
   - Decorate with `[Authorize(Roles = "GroupLeader,Manager")]`.
   - Expose endpoints to manage scheduled emails and receivers.
-- [ ] Regenerate the OpenAPI frontend client (`npm run generate:api`).
+>  ✅ 2026-06-30 18:32 - Created controller exposing endpoints to create schedules, add receivers, and fetch group schedules.
+- [x] Regenerate the OpenAPI frontend client (`npm run generate:api`).
+>  ✅ 2026-06-30 18:32 - Regenerated frontend API models and services using ng-openapi-gen.
 
 ### Tasks - Core Services Wrapper
 
-- [ ] Create core wrapper service `src/frontend/src/app/core/services/scheduled-email.service.ts`:
+- [x] Create core wrapper service `src/frontend/src/app/core/services/scheduled-email.service.ts`:
   - Expose `createScheduledEmail(req: CreateScheduledEmailRequest): Promise<string>`.
   - Expose `addReceiver(emailId: string, req: AddReceiverRequest): Promise<void>`.
   - Expose `getGroupSchedules(groupId: string): Promise<ScheduledEmailDto[]>`.
+>  ✅ 2026-06-30 18:32 - Created ScheduledEmailService wrapping the regenerated OpenAPI client functions.
 
 ### Tasks - Scheduled Email UI Components
 
-- [ ] Create standalone ScheduledEmailConfigComponent (`src/frontend/src/app/features/group-leader/scheduled-email-config/scheduled-email-config.component.ts`):
+- [x] Create standalone ScheduledEmailConfigComponent (`src/frontend/src/app/features/group-leader/scheduled-email-config/scheduled-email-config.component.ts`):
   - Form validations for Frequency, CronExpression, and Specific Day of Month.
   - Checklist of potential receivers (Group Leader, Partners, Managers, Client Contacts).
   - Submit action invoking `ScheduledEmailService`.
+>  ✅ 2026-06-30 18:32 - Created ScheduledEmailConfigComponent supporting frequency select, specific day validation, and target receiver drop-downs.
 
 ### Tasks - Routing Setup
 
-- [ ] Integrate configuration panel as a view/tab within the Group details route:
+- [x] Integrate configuration panel as a view/tab within the Group details route:
   - `/lider/grupos/:id` -> GroupDetailsComponent (containing ScheduledEmailConfigComponent).
+>  ✅ 2026-06-30 18:32 - Created GroupDetailsComponent and wired lazy-loaded route in app.routes.ts.
 
 ### Tasks - Verification & Testing
 
-- [ ] Write integration and unit tests for backend `ScheduledEmailsController`.
-- [ ] Write Vitest unit tests for frontend `ScheduledEmailService` and configuration component.
-- [ ] Run `npm run test` to verify all tests compile and pass.
+- [x] Write integration and unit tests for backend `ScheduledEmailsController`.
+- [x] Write Vitest unit tests for frontend `ScheduledEmailService` and configuration component.
+- [x] Run `npm run test` to verify all tests compile and pass.
+>  ✅ 2026-06-30 18:32 - Created unit tests for the command handlers in backend, wrote Vitest unit tests for the service in frontend, and verified both backend and frontend test suites pass.
 
 ---
 
