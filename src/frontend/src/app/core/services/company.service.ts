@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { Api } from '../../api/api';
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
-import { ClientContactDto } from '../../api/models/client-contact-dto';
+
 import {
   apiProviderCompaniesPost$Json,
   apiProviderCompaniesIdGet$Json,
@@ -57,11 +57,6 @@ export class CompanyService {
       clientCompanyId,
       body: req
     });
-  }
-  // Fetch contacts for a client company
-  async getClientContacts(clientCompanyId: string): Promise<ClientContactDto[]> {
-    const url = `${this.api.rootUrl}/api/ClientCompanies/${clientCompanyId}/contacts`;
-    return await firstValueFrom(this.http.get<ClientContactDto[]>(url));
   }
 
   async registerProject(req: RegisterProjectRequest): Promise<string> {

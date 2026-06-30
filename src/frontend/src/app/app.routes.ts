@@ -61,6 +61,16 @@ export const routes: Routes = [
     canActivate: [authGuard]
   },
   {
+    path: 'admin/projetos',
+    loadComponent: () => import('./features/admin/project-list/project-list.component').then(m => m.ProjectListComponent),
+    canActivate: [authGuard]
+  },
+  {
+    path: 'admin/projetos/novo',
+    loadComponent: () => import('./features/admin/project-register/project-register.component').then(m => m.ProjectRegisterComponent),
+    canActivate: [authGuard]
+  },
+  {
     path: '**',
     redirectTo: 'login'
   }
