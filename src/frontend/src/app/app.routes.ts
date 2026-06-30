@@ -36,6 +36,16 @@ export const routes: Routes = [
     canActivate: [authGuard]
   },
   {
+    path: 'admin/provedores/detalhes',
+    loadComponent: () => import('./features/admin/provider-details/provider-details.component').then(m => m.ProviderDetailsComponent),
+    canActivate: [authGuard]
+  },
+  {
+    path: 'admin/provedores/novo',
+    loadComponent: () => import('./features/admin/provider-register/provider-register.component').then(m => m.ProviderRegisterComponent),
+    canActivate: [authGuard]
+  },
+  {
     path: 'minha-conta',
     loadComponent: () => import('./features/account/account-management.component').then(m => m.AccountManagementComponent),
     canActivate: [authGuard]

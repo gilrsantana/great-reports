@@ -1,0 +1,109 @@
+import { Component, OnInit, signal, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
+import { CompanyService } from '../../../core/services/company.service';
+import { ProviderDetailsDto } from '../../../api/models/provider-details-dto';
+
+@Component({
+  selector: 'app-provider-details',
+  standalone: true,
+  imports: [CommonModule, RouterModule],
+  template: `
+    <div class="p-6 min-h-screen bg-[var(--color-bg-primary)] text-white px-4 font-['Inter']">
+      
+      <div class="max-w-2xl mx-auto space-y-6">
+        
+        <!-- Header -->
+        <div class="bg-white/5 border border-white/10 rounded-xl p-6 backdrop-blur-md">
+          <div class="flex justify-between items-center">
+            <div>
+              <h1 class="text-3xl font-extrabold tracking-tight font-['Outfit'] text-white">
+                Detalhes do Provedor
+              </h1>
+              <p class="text-xs text-[var(--color-text-secondary)] mt-2 uppercase tracking-wider">
+                Configuração ativa do Provedor de Serviços de TI.
+              </p>
+            </div>
+            <button routerLink="/admin" class="px-3.5 py-1.5 bg-white/5 hover:bg-white/10 border border-white/10 text-gray-300 rounded-lg text-sm transition-colors cursor-pointer">
+              Painel
+            </button>
+          </div>
+        </div>
+
+        <!-- Details Card -->
+        <div class="bg-white/5 border border-white/10 rounded-xl p-6 backdrop-blur-md">
+          
+          <!-- Loader -->
+          <div *ngIf="loading()" class="py-12 flex justify-center items-center text-gray-400">
+            <svg class="animate-spin h-8 w-8 text-[var(--color-accent-brand)] mr-3" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            <span>Carregando dados do provedor...</span>
+          </div>
+
+          <!-- Content -->
+          <div *ngIf="!loading() && provider()" class="space-y-6">
+            <div class="border-b border-white/5 pb-4">
+              <span class="text-xs text-[var(--color-text-secondary)] block font-semibold uppercase tracking-wider">Nome Razão Social</span>
+              <span class="text-xl font-bold text-white block mt-1">{{ provider()?.name }}</span>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 border-b border-white/5 pb-4">
+              <div>
+                <span class="text-xs text-[var(--color-text-secondary)] block font-semibold uppercase tracking-wider">CNPJ</span>
+                <span class="text-sm font-bold font-mono text-white block mt-1">{{ provider()?.taxId }}</span>
+              </div>
+            </div>
+
+            <div>
+              <span class="text-xs text-[var(--color-text-secondary)] block font-semibold uppercase tracking-wider">Identificador (UUID)</span>
+              <span class="text-xs font-mono text-indigo-300 block mt-1 select-all">{{ provider()?.id }}</span>
+            </div>
+          </div>
+
+          <!-- Empty State -->
+          <div *ngIf="!loading() && !provider()" class="py-8 text-center text-gray-400">
+            <p>Nenhum Provedor ativo configurado. Por favor, adicione um novo provedor ou selecione um UUID ativo no Painel.</p>
+            <button routerLink="/admin/provedores/novo" class="mt-4 px-4 py-2 bg-[var(--color-accent-brand)] hover:opacity-90 text-white rounded-lg text-xs font-semibold transition-all">
+              Cadastrar Provedor
+            </button>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+  `
+})
+export class ProviderDetailsComponent implements OnInit {
+  private readonly companyService = inject(CompanyService);
+
+  readonly provider = signal<ProviderDetailsDto | null>(null);
+  readonly loading = signal<boolean>(true);
+
+  ngOnInit() {
+    this.loadProvider();
+  }
+
+  async loadProvider() {
+    this.loading.set(true);
+    const providerId = localStorage.getItem('active_provider_id');
+    if (!providerId) {
+      this.provider.set(null);
+      this.loading.set(false);
+      return;
+    }
+
+    try {
+      const data = await this.companyService.getProviderDetails(providerId);
+      this.provider.set(data);
+    } catch (err) {
+      console.error(err);
+      this.provider.set(null);
+    } finally {
+      this.loading.set(false);
+    }
+  }
+}
