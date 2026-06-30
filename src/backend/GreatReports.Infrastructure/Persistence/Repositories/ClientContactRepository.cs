@@ -12,6 +12,13 @@ public class ClientContactRepository(GreatReportsDbContext dbContext) : BaseEnti
             .FirstOrDefaultAsync(c => c.Email == email && c.Active, cancellationToken);
     }
 
+    public async Task<IReadOnlyList<ClientContact>> GetByClientCompanyIdAsync(Guid clientCompanyId, CancellationToken cancellationToken = default)
+    {
+        return await DbContext.Set<ClientContact>()
+            .Where(c => c.ClientCompanyId == clientCompanyId && c.Active)
+            .ToListAsync(cancellationToken);
+    }
+
     public void Delete(ClientContact contact)
     {
         DbContext.Set<ClientContact>().Remove(contact);
