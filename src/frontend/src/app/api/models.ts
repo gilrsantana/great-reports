@@ -4,8 +4,12 @@
 export type { AddClientContactRequest } from './models/add-client-contact-request';
 export type { ChangePasswordRequest } from './models/change-password-request';
 export type { ClientCompanyDto } from './models/client-company-dto';
+export type { ClientContactDto } from './models/client-contact-dto';
 export type { ConfirmEmailRequest } from './models/confirm-email-request';
+export type { ContactType } from './models/contact-type';
+export type { CreateGroupRequest } from './models/create-group-request';
 export type { ForgetPasswordRequest } from './models/forget-password-request';
+export type { GroupDto } from './models/group-dto';
 export type { LoginRequest } from './models/login-request';
 export type { PagedResponseOfClientCompanyDto } from './models/paged-response-of-client-company-dto';
 export type { ProviderDetailsDto } from './models/provider-details-dto';

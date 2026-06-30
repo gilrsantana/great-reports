@@ -71,6 +71,16 @@ export const routes: Routes = [
     canActivate: [authGuard]
   },
   {
+    path: 'lider/grupos',
+    loadComponent: () => import('./features/group-leader/group-list/group-list.component').then(m => m.GroupListComponent),
+    canActivate: [authGuard]
+  },
+  {
+    path: 'lider/grupos/novo',
+    loadComponent: () => import('./features/group-leader/group-register/group-register.component').then(m => m.GroupRegisterComponent),
+    canActivate: [authGuard]
+  },
+  {
     path: '**',
     redirectTo: 'login'
   }
