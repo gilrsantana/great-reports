@@ -1,6 +1,6 @@
 Por favor, invoque o subagente dotnet-boilerplate-architect para implementar uma nova entidade completa no projeto chamada {EntityName}.
 Instruções para o agente:
-1. Para começar, leia a nossa skill de roteamento em .gemini/skills/00-scaffold-feature-playbook/SKILL.md .
+1. Para começar, leia a nossa skill de roteamento em .gemini/skills/00-backend-scaffold-playbook/SKILL.md .
 2. Siga rigorosamente a ordem sequencial das fases descritas no checklist do playbook (da Fase 1 à Fase 6).
 3. Use as regras de negócio em .gemini/rules/ e as skills em .gemini/skills/ para gerar os arquivos necessários:
     • A classe de domínio {EntityName} herdando de BaseEntity com UUID v7.

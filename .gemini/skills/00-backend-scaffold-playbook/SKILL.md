@@ -1,9 +1,9 @@
 ---
-name: scaffold-feature-playbook
-description: Master playbook to guide the chronological creation of a new feature (domain, use cases, DB mapping, DI, controller, and tests) by linking individual skills.
+name: backend-scaffold-playbook
+description: Master playbook to guide the chronological creation of a new backend feature (domain, use cases, DB mapping, DI, controller, and tests) by linking individual skills.
 ---
 
-# Playbook: Scaffolding a New Feature Slice
+# Playbook: Scaffolding a New Backend Feature Slice
 
 Use this playbook when you need to add a new entity or feature to the application. You must follow the steps below sequentially, utilizing the individual referenced skills.
 
