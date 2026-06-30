@@ -9,24 +9,24 @@ import { RequestBuilder } from '../../request-builder';
 
 import { RegisterProviderCompanyRequest } from '../../models/register-provider-company-request';
 
-export interface ApiProviderCompaniesPost$Params {
+export interface ApiProviderCompaniesPost$Json$Params {
       body: RegisterProviderCompanyRequest
 }
 
-export function apiProviderCompaniesPost(http: HttpClient, rootUrl: string, params: ApiProviderCompaniesPost$Params, context?: HttpContext): Observable<StrictHttpResponse<void>> {
-  const rb = new RequestBuilder(rootUrl, apiProviderCompaniesPost.PATH, 'post');
+export function apiProviderCompaniesPost$Json(http: HttpClient, rootUrl: string, params: ApiProviderCompaniesPost$Json$Params, context?: HttpContext): Observable<StrictHttpResponse<string>> {
+  const rb = new RequestBuilder(rootUrl, apiProviderCompaniesPost$Json.PATH, 'post');
   if (params) {
     rb.body(params.body, 'application/*+json');
   }
 
   return http.request(
-    rb.build({ responseType: 'text', accept: '*/*', context })
+    rb.build({ responseType: 'json', accept: 'text/json', context })
   ).pipe(
     filter((r: any): r is HttpResponse<any> => r instanceof HttpResponse),
     map((r: HttpResponse<any>) => {
-      return (r as HttpResponse<any>).clone({ body: undefined }) as StrictHttpResponse<void>;
+      return r as StrictHttpResponse<string>;
     })
   );
 }
 
-apiProviderCompaniesPost.PATH = '/api/ProviderCompanies';
+apiProviderCompaniesPost$Json.PATH = '/api/ProviderCompanies';

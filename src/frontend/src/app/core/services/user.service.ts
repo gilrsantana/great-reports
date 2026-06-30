@@ -1,15 +1,15 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { firstValueFrom } from 'rxjs';
-import { RegisterUserRequest } from '../models/user.models';
+import { Api } from '../../api/api';
+import { apiUsersPost$Json } from '../../api/functions';
+import { RegisterUserRequest } from '../../api/models/register-user-request';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UserService {
-  private readonly http = inject(HttpClient);
+  private readonly api = inject(Api);
 
-  registerUser(req: RegisterUserRequest): Promise<string> {
-    return firstValueFrom(this.http.post<string>('/api/users', req));
+  async registerUser(req: RegisterUserRequest): Promise<string> {
+    return await this.api.invoke(apiUsersPost$Json, { body: req });
   }
 }

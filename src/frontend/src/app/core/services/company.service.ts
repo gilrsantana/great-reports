@@ -1,43 +1,62 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { firstValueFrom } from 'rxjs';
+import { Api } from '../../api/api';
+import {
+  apiProviderCompaniesPost$Json,
+  apiProviderCompaniesIdGet$Json,
+  apiClientCompaniesPost$Json,
+  apiClientCompaniesGet$Json,
+  apiClientCompaniesClientCompanyIdContactsPost$Json,
+  apiProjectsPost$Json
+} from '../../api/functions';
+import { RegisterProviderCompanyRequest } from '../../api/models/register-provider-company-request';
+import { ProviderDetailsDto } from '../../api/models/provider-details-dto';
+import { RegisterClientCompanyRequest } from '../../api/models/register-client-company-request';
+import { AddClientContactRequest } from '../../api/models/add-client-contact-request';
+import { RegisterProjectRequest } from '../../api/models/register-project-request';
 import { PagedResponse } from '../models/paged-response.models';
-import { ProviderCompany, RegisterProviderCompanyRequest } from '../models/provider-company.models';
-import { ClientCompany, RegisterClientCompanyRequest } from '../models/client-company.models';
-import { AddClientContactRequest } from '../models/client-contact.models';
-import { RegisterProjectRequest } from '../models/project.models';
+import { ClientCompany } from '../models/client-company.models';
 
 @Injectable({
   providedIn: 'root'
 })
 export class CompanyService {
-  private readonly http = inject(HttpClient);
+  private readonly api = inject(Api);
 
-  registerProvider(req: RegisterProviderCompanyRequest): Promise<string> {
-    return firstValueFrom(this.http.post<string>('/api/providercompanies', req));
+  async registerProvider(req: RegisterProviderCompanyRequest): Promise<string> {
+    return await this.api.invoke(apiProviderCompaniesPost$Json, { body: req });
   }
 
-  getProviderDetails(id: string): Promise<ProviderCompany> {
-    return firstValueFrom(this.http.get<ProviderCompany>(`/api/providercompanies/${id}`));
+  async getProviderDetails(id: string): Promise<ProviderDetailsDto> {
+    return await this.api.invoke(apiProviderCompaniesIdGet$Json, { id });
   }
 
-  registerClient(req: RegisterClientCompanyRequest): Promise<string> {
-    return firstValueFrom(this.http.post<string>('/api/clientcompanies', req));
+  async registerClient(req: RegisterClientCompanyRequest): Promise<string> {
+    return await this.api.invoke(apiClientCompaniesPost$Json, { body: req });
   }
 
-  getClientCompanies(providerId: string, page: number, pageSize: number): Promise<PagedResponse<ClientCompany>> {
-    return firstValueFrom(
-      this.http.get<PagedResponse<ClientCompany>>(
-        `/api/clientcompanies?providerId=${providerId}&page=${page}&pageSize=${pageSize}`
-      )
-    );
+  async getClientCompanies(providerId: string, page: number, pageSize: number): Promise<PagedResponse<ClientCompany>> {
+    const response = await this.api.invoke(apiClientCompaniesGet$Json, { providerId, page, pageSize });
+    return {
+      items: (response.items || []).map(item => ({
+        id: item.id,
+        name: item.name,
+        providerCompanyId: providerId
+      })),
+      page: Number(response.page),
+      pageSize: Number(response.pageSize),
+      totalCount: Number(response.totalCount),
+      totalPages: Number(response.totalPages || 0)
+    };
   }
 
-  addClientContact(clientCompanyId: string, req: AddClientContactRequest): Promise<string> {
-    return firstValueFrom(this.http.post<string>(`/api/clientcompanies/${clientCompanyId}/contacts`, req));
+  async addClientContact(clientCompanyId: string, req: AddClientContactRequest): Promise<string> {
+    return await this.api.invoke(apiClientCompaniesClientCompanyIdContactsPost$Json, {
+      clientCompanyId,
+      body: req
+    });
   }
 
-  registerProject(req: RegisterProjectRequest): Promise<string> {
-    return firstValueFrom(this.http.post<string>('/api/projects', req));
+  async registerProject(req: RegisterProjectRequest): Promise<string> {
+    return await this.api.invoke(apiProjectsPost$Json, { body: req });
   }
 }

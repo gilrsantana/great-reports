@@ -3,12 +3,16 @@
 
 export type { AddClientContactRequest } from './models/add-client-contact-request';
 export type { ChangePasswordRequest } from './models/change-password-request';
+export type { ClientCompanyDto } from './models/client-company-dto';
 export type { ConfirmEmailRequest } from './models/confirm-email-request';
 export type { ForgetPasswordRequest } from './models/forget-password-request';
 export type { LoginRequest } from './models/login-request';
+export type { PagedResponseOfClientCompanyDto } from './models/paged-response-of-client-company-dto';
+export type { ProviderDetailsDto } from './models/provider-details-dto';
 export type { RefreshTokenRequest } from './models/refresh-token-request';
 export type { RegisterClientCompanyRequest } from './models/register-client-company-request';
 export type { RegisterProjectRequest } from './models/register-project-request';
 export type { RegisterProviderCompanyRequest } from './models/register-provider-company-request';
 export type { RegisterUserRequest } from './models/register-user-request';
 export type { ResetPasswordRequest } from './models/reset-password-request';
+export type { TokenResponse } from './models/token-response';

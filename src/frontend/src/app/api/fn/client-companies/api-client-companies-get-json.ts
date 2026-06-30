@@ -7,15 +7,16 @@ import { filter, map } from 'rxjs/operators';
 import { StrictHttpResponse } from '../../strict-http-response';
 import { RequestBuilder } from '../../request-builder';
 
+import { PagedResponseOfClientCompanyDto } from '../../models/paged-response-of-client-company-dto';
 
-export interface ApiClientCompaniesGet$Params {
+export interface ApiClientCompaniesGet$Json$Params {
   providerId?: string;
   page?: (number | string);
   pageSize?: (number | string);
 }
 
-export function apiClientCompaniesGet(http: HttpClient, rootUrl: string, params?: ApiClientCompaniesGet$Params, context?: HttpContext): Observable<StrictHttpResponse<void>> {
-  const rb = new RequestBuilder(rootUrl, apiClientCompaniesGet.PATH, 'get');
+export function apiClientCompaniesGet$Json(http: HttpClient, rootUrl: string, params?: ApiClientCompaniesGet$Json$Params, context?: HttpContext): Observable<StrictHttpResponse<PagedResponseOfClientCompanyDto>> {
+  const rb = new RequestBuilder(rootUrl, apiClientCompaniesGet$Json.PATH, 'get');
   if (params) {
     rb.query('providerId', params.providerId, {});
     rb.query('page', params.page, {});
@@ -23,13 +24,13 @@ export function apiClientCompaniesGet(http: HttpClient, rootUrl: string, params?
   }
 
   return http.request(
-    rb.build({ responseType: 'text', accept: '*/*', context })
+    rb.build({ responseType: 'json', accept: 'text/json', context })
   ).pipe(
     filter((r: any): r is HttpResponse<any> => r instanceof HttpResponse),
     map((r: HttpResponse<any>) => {
-      return (r as HttpResponse<any>).clone({ body: undefined }) as StrictHttpResponse<void>;
+      return r as StrictHttpResponse<PagedResponseOfClientCompanyDto>;
     })
   );
 }
 
-apiClientCompaniesGet.PATH = '/api/ClientCompanies';
+apiClientCompaniesGet$Json.PATH = '/api/ClientCompanies';

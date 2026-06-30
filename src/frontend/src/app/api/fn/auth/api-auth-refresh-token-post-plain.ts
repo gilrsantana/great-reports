@@ -8,25 +8,26 @@ import { StrictHttpResponse } from '../../strict-http-response';
 import { RequestBuilder } from '../../request-builder';
 
 import { RefreshTokenRequest } from '../../models/refresh-token-request';
+import { TokenResponse } from '../../models/token-response';
 
-export interface ApiAuthRefreshTokenPost$Params {
+export interface ApiAuthRefreshTokenPost$Plain$Params {
       body: RefreshTokenRequest
 }
 
-export function apiAuthRefreshTokenPost(http: HttpClient, rootUrl: string, params: ApiAuthRefreshTokenPost$Params, context?: HttpContext): Observable<StrictHttpResponse<void>> {
-  const rb = new RequestBuilder(rootUrl, apiAuthRefreshTokenPost.PATH, 'post');
+export function apiAuthRefreshTokenPost$Plain(http: HttpClient, rootUrl: string, params: ApiAuthRefreshTokenPost$Plain$Params, context?: HttpContext): Observable<StrictHttpResponse<TokenResponse>> {
+  const rb = new RequestBuilder(rootUrl, apiAuthRefreshTokenPost$Plain.PATH, 'post');
   if (params) {
     rb.body(params.body, 'application/*+json');
   }
 
   return http.request(
-    rb.build({ responseType: 'text', accept: '*/*', context })
+    rb.build({ responseType: 'text', accept: 'text/plain', context })
   ).pipe(
     filter((r: any): r is HttpResponse<any> => r instanceof HttpResponse),
     map((r: HttpResponse<any>) => {
-      return (r as HttpResponse<any>).clone({ body: undefined }) as StrictHttpResponse<void>;
+      return r as StrictHttpResponse<TokenResponse>;
     })
   );
 }
 
-apiAuthRefreshTokenPost.PATH = '/api/Auth/refresh-token';
+apiAuthRefreshTokenPost$Plain.PATH = '/api/Auth/refresh-token';

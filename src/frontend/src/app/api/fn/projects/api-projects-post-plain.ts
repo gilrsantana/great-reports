@@ -7,26 +7,26 @@ import { filter, map } from 'rxjs/operators';
 import { StrictHttpResponse } from '../../strict-http-response';
 import { RequestBuilder } from '../../request-builder';
 
-import { RegisterUserRequest } from '../../models/register-user-request';
+import { RegisterProjectRequest } from '../../models/register-project-request';
 
-export interface ApiUsersPost$Params {
-      body: RegisterUserRequest
+export interface ApiProjectsPost$Plain$Params {
+      body: RegisterProjectRequest
 }
 
-export function apiUsersPost(http: HttpClient, rootUrl: string, params: ApiUsersPost$Params, context?: HttpContext): Observable<StrictHttpResponse<void>> {
-  const rb = new RequestBuilder(rootUrl, apiUsersPost.PATH, 'post');
+export function apiProjectsPost$Plain(http: HttpClient, rootUrl: string, params: ApiProjectsPost$Plain$Params, context?: HttpContext): Observable<StrictHttpResponse<string>> {
+  const rb = new RequestBuilder(rootUrl, apiProjectsPost$Plain.PATH, 'post');
   if (params) {
     rb.body(params.body, 'application/*+json');
   }
 
   return http.request(
-    rb.build({ responseType: 'text', accept: '*/*', context })
+    rb.build({ responseType: 'text', accept: 'text/plain', context })
   ).pipe(
     filter((r: any): r is HttpResponse<any> => r instanceof HttpResponse),
     map((r: HttpResponse<any>) => {
-      return (r as HttpResponse<any>).clone({ body: undefined }) as StrictHttpResponse<void>;
+      return r as StrictHttpResponse<string>;
     })
   );
 }
 
-apiUsersPost.PATH = '/api/Users';
+apiProjectsPost$Plain.PATH = '/api/Projects';

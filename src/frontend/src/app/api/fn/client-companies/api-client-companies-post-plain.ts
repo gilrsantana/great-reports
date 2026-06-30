@@ -9,24 +9,24 @@ import { RequestBuilder } from '../../request-builder';
 
 import { RegisterClientCompanyRequest } from '../../models/register-client-company-request';
 
-export interface ApiClientCompaniesPost$Params {
+export interface ApiClientCompaniesPost$Plain$Params {
       body: RegisterClientCompanyRequest
 }
 
-export function apiClientCompaniesPost(http: HttpClient, rootUrl: string, params: ApiClientCompaniesPost$Params, context?: HttpContext): Observable<StrictHttpResponse<void>> {
-  const rb = new RequestBuilder(rootUrl, apiClientCompaniesPost.PATH, 'post');
+export function apiClientCompaniesPost$Plain(http: HttpClient, rootUrl: string, params: ApiClientCompaniesPost$Plain$Params, context?: HttpContext): Observable<StrictHttpResponse<string>> {
+  const rb = new RequestBuilder(rootUrl, apiClientCompaniesPost$Plain.PATH, 'post');
   if (params) {
     rb.body(params.body, 'application/*+json');
   }
 
   return http.request(
-    rb.build({ responseType: 'text', accept: '*/*', context })
+    rb.build({ responseType: 'text', accept: 'text/plain', context })
   ).pipe(
     filter((r: any): r is HttpResponse<any> => r instanceof HttpResponse),
     map((r: HttpResponse<any>) => {
-      return (r as HttpResponse<any>).clone({ body: undefined }) as StrictHttpResponse<void>;
+      return r as StrictHttpResponse<string>;
     })
   );
 }
 
-apiClientCompaniesPost.PATH = '/api/ClientCompanies';
+apiClientCompaniesPost$Plain.PATH = '/api/ClientCompanies';

@@ -9,26 +9,26 @@ import { RequestBuilder } from '../../request-builder';
 
 import { AddClientContactRequest } from '../../models/add-client-contact-request';
 
-export interface ApiClientCompaniesClientCompanyIdContactsPost$Params {
+export interface ApiClientCompaniesClientCompanyIdContactsPost$Plain$Params {
   clientCompanyId: string;
       body: AddClientContactRequest
 }
 
-export function apiClientCompaniesClientCompanyIdContactsPost(http: HttpClient, rootUrl: string, params: ApiClientCompaniesClientCompanyIdContactsPost$Params, context?: HttpContext): Observable<StrictHttpResponse<void>> {
-  const rb = new RequestBuilder(rootUrl, apiClientCompaniesClientCompanyIdContactsPost.PATH, 'post');
+export function apiClientCompaniesClientCompanyIdContactsPost$Plain(http: HttpClient, rootUrl: string, params: ApiClientCompaniesClientCompanyIdContactsPost$Plain$Params, context?: HttpContext): Observable<StrictHttpResponse<string>> {
+  const rb = new RequestBuilder(rootUrl, apiClientCompaniesClientCompanyIdContactsPost$Plain.PATH, 'post');
   if (params) {
     rb.path('clientCompanyId', params.clientCompanyId, {});
     rb.body(params.body, 'application/*+json');
   }
 
   return http.request(
-    rb.build({ responseType: 'text', accept: '*/*', context })
+    rb.build({ responseType: 'text', accept: 'text/plain', context })
   ).pipe(
     filter((r: any): r is HttpResponse<any> => r instanceof HttpResponse),
     map((r: HttpResponse<any>) => {
-      return (r as HttpResponse<any>).clone({ body: undefined }) as StrictHttpResponse<void>;
+      return r as StrictHttpResponse<string>;
     })
   );
 }
 
-apiClientCompaniesClientCompanyIdContactsPost.PATH = '/api/ClientCompanies/{clientCompanyId}/contacts';
+apiClientCompaniesClientCompanyIdContactsPost$Plain.PATH = '/api/ClientCompanies/{clientCompanyId}/contacts';

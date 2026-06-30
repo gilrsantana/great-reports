@@ -7,26 +7,26 @@ import { filter, map } from 'rxjs/operators';
 import { StrictHttpResponse } from '../../strict-http-response';
 import { RequestBuilder } from '../../request-builder';
 
-import { LoginRequest } from '../../models/login-request';
+import { RegisterUserRequest } from '../../models/register-user-request';
 
-export interface ApiAuthLoginPost$Params {
-      body: LoginRequest
+export interface ApiUsersPost$Json$Params {
+      body: RegisterUserRequest
 }
 
-export function apiAuthLoginPost(http: HttpClient, rootUrl: string, params: ApiAuthLoginPost$Params, context?: HttpContext): Observable<StrictHttpResponse<void>> {
-  const rb = new RequestBuilder(rootUrl, apiAuthLoginPost.PATH, 'post');
+export function apiUsersPost$Json(http: HttpClient, rootUrl: string, params: ApiUsersPost$Json$Params, context?: HttpContext): Observable<StrictHttpResponse<string>> {
+  const rb = new RequestBuilder(rootUrl, apiUsersPost$Json.PATH, 'post');
   if (params) {
     rb.body(params.body, 'application/*+json');
   }
 
   return http.request(
-    rb.build({ responseType: 'text', accept: '*/*', context })
+    rb.build({ responseType: 'json', accept: 'text/json', context })
   ).pipe(
     filter((r: any): r is HttpResponse<any> => r instanceof HttpResponse),
     map((r: HttpResponse<any>) => {
-      return (r as HttpResponse<any>).clone({ body: undefined }) as StrictHttpResponse<void>;
+      return r as StrictHttpResponse<string>;
     })
   );
 }
 
-apiAuthLoginPost.PATH = '/api/Auth/login';
+apiUsersPost$Json.PATH = '/api/Users';
