@@ -38,7 +38,7 @@ public class GetProviderDetailsQueryHandlerTests
     {
         // Arrange
         var providerId = Guid.NewGuid();
-        var provider = ProviderCompany.Create("Provedor Teste", "12.345.678/0001-90").Value;
+        var provider = ProviderCompany.Create("Provedor Teste", "12.345.678/0001-90", Guid.CreateVersion7()).Value;
         // Since provider ID is set privately by BaseEntity, let's look at how we can mock it or if the entity constructor creates it.
         // Wait, BaseEntity has a public or protected constructor that generates a Guid? Let's check BaseEntity.cs.
         // Let's inspect BaseEntity.cs. Let's do that!

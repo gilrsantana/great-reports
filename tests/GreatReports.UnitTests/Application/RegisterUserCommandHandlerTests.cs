@@ -42,7 +42,7 @@ public class RegisterUserCommandHandlerTests
     public async Task Handle_ShouldReturnFailure_WhenUserAlreadyExistsWithEmail()
     {
         // Arrange
-        var provider = ProviderCompany.Create("Provider", "Tax").Value;
+        var provider = ProviderCompany.Create("Provider", "Tax", Guid.CreateVersion7()).Value;
         var existingUser = User.Create(provider.Id, "João", "test@email.com").Value;
         var command = new RegisterUserCommand(provider.Id, "João Silva", "test@email.com", "Partner");
 
@@ -65,7 +65,7 @@ public class RegisterUserCommandHandlerTests
     public async Task Handle_ShouldReturnFailure_WhenUserCreationFails()
     {
         // Arrange
-        var provider = ProviderCompany.Create("Provider", "Tax").Value;
+        var provider = ProviderCompany.Create("Provider", "Tax", Guid.CreateVersion7()).Value;
         var command = new RegisterUserCommand(provider.Id, "", "test@email.com", "Partner"); // Empty name fails creation
 
         _providerCompanyRepositoryMock
@@ -87,7 +87,7 @@ public class RegisterUserCommandHandlerTests
     public async Task Handle_ShouldRollbackAndReturnFailure_WhenIdentityServiceFails()
     {
         // Arrange
-        var provider = ProviderCompany.Create("Provider", "Tax").Value;
+        var provider = ProviderCompany.Create("Provider", "Tax", Guid.CreateVersion7()).Value;
         var command = new RegisterUserCommand(provider.Id, "João Silva", "test@email.com", "Partner");
 
         _providerCompanyRepositoryMock
@@ -121,7 +121,7 @@ public class RegisterUserCommandHandlerTests
     public async Task Handle_ShouldReturnSuccess_WhenIdentityServiceSucceeds()
     {
         // Arrange
-        var provider = ProviderCompany.Create("Provider", "Tax").Value;
+        var provider = ProviderCompany.Create("Provider", "Tax", Guid.CreateVersion7()).Value;
         var command = new RegisterUserCommand(provider.Id, "João Silva", "test@email.com", "Partner");
 
         _providerCompanyRepositoryMock

@@ -6,11 +6,16 @@ using GreatReports.Shared;
 
 namespace GreatReports.Application.UseCases.ProviderCompanies.CommandHandlers;
 
-public class RegisterProviderCompanyCommandHandler(IProviderCompanyRepository providerCompanyRepository) : ICommandHandler<RegisterProviderCompanyCommand, Guid>
+public class RegisterProviderCompanyCommandHandler(IProviderCompanyRepository providerCompanyRepository, IIdentityService identityService) : ICommandHandler<RegisterProviderCompanyCommand, Guid>
 {
     public async Task<Result<Guid>> HandleAsync(RegisterProviderCompanyCommand command, CancellationToken cancellationToken = default)
     {
-        var entityResult = ProviderCompany.Create(command.Name, command.TaxId);
+        if (!await HasManagerRoleAsync(command))
+        {
+            return Result.Failure<Guid>(new Error("ProviderCompany.UserNotAuthenticated", "Usuário sem permissão."));
+        }
+
+        var entityResult = ProviderCompany.Create(command.Name, command.TaxId, command.ManagerId);
         if (entityResult.IsFailure)
         {
             return Result.Failure<Guid>(entityResult.Error);
@@ -27,5 +32,20 @@ public class RegisterProviderCompanyCommandHandler(IProviderCompanyRepository pr
         await providerCompanyRepository.SaveChangesAsync(cancellationToken);
 
         return provider.Id;
+    }
+
+    private async Task<bool> HasManagerRoleAsync(RegisterProviderCompanyCommand command)
+    {
+        var userRoles = await identityService.GetUserRolesAsync([command.ManagerId]);
+        if (userRoles is null)
+            return false;
+
+        foreach (var role in userRoles.Values)
+        {
+            if (role == "Manager")
+                return true;
+        }
+
+        return false;
     }
 }

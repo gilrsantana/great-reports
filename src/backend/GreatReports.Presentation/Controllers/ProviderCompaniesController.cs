@@ -25,7 +25,7 @@ public class ProviderCompaniesController : ApiControllerBase
     [ProducesResponseType(typeof(Guid), StatusCodes.Status200OK)]
     public async Task<IActionResult> Register([FromBody] RegisterProviderCompanyRequest request, CancellationToken cancellationToken)
     {
-        var command = new RegisterProviderCompanyCommand(request.Name, request.TaxId);
+        var command = new RegisterProviderCompanyCommand(request.Name, request.TaxId, Guid.Parse(request.ManagerId));
         var result = await _registerHandler.HandleAsync(command, cancellationToken);
         return HandleResult(result);
     }

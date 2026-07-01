@@ -40,7 +40,7 @@ public class RegisterClientCompanyCommandHandlerTests
     public async Task Handle_ShouldReturnFailure_WhenClientCompanyCreationFails()
     {
         // Arrange
-        var provider = ProviderCompany.Create("Provider", "Tax").Value;
+        var provider = ProviderCompany.Create("Provider", "Tax", Guid.CreateVersion7()).Value;
         var command = new RegisterClientCompanyCommand(provider.Id, ""); // Empty name will fail creation
 
         _providerCompanyRepositoryMock
@@ -59,7 +59,7 @@ public class RegisterClientCompanyCommandHandlerTests
     public async Task Handle_ShouldReturnSuccess_WhenCommandIsValid()
     {
         // Arrange
-        var provider = ProviderCompany.Create("Provider", "Tax").Value;
+        var provider = ProviderCompany.Create("Provider", "Tax", Guid.CreateVersion7()).Value;
         var command = new RegisterClientCompanyCommand(provider.Id, "Client Name");
 
         _providerCompanyRepositoryMock

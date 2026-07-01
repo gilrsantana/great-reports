@@ -23,6 +23,9 @@ public class ProviderCompanyConfiguration : IEntityTypeConfiguration<ProviderCom
         builder.HasIndex(e => e.TaxId)
             .IsUnique();
 
+        builder.Property(e => e.ManagerId)
+        .IsRequired();
+
         builder.HasMany<ClientCompany>()
             .WithOne()
             .HasForeignKey(c => c.ProviderCompanyId)

@@ -8,7 +8,7 @@ public class ProviderCompanyTests
     public void Create_ShouldReturnFailure_WhenNameIsEmpty()
     {
         // Act
-        var result = ProviderCompany.Create("", "12.345.678/0001-90");
+        var result = ProviderCompany.Create("", "12.345.678/0001-90", Guid.CreateVersion7());
 
         // Assert
         Assert.True(result.IsFailure);
@@ -19,7 +19,7 @@ public class ProviderCompanyTests
     public void Create_ShouldReturnFailure_WhenTaxIdIsEmpty()
     {
         // Act
-        var result = ProviderCompany.Create("Provedor Teste", "");
+        var result = ProviderCompany.Create("Provedor Teste", "", Guid.CreateVersion7());
 
         // Assert
         Assert.True(result.IsFailure);
@@ -34,7 +34,7 @@ public class ProviderCompanyTests
         var taxId = "12.345.678/0001-90";
 
         // Act
-        var result = ProviderCompany.Create(name, taxId);
+        var result = ProviderCompany.Create(name, taxId, Guid.CreateVersion7());
 
         // Assert
         Assert.True(result.IsSuccess);
