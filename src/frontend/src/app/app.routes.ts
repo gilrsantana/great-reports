@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './core/guards/auth.guard';
+import { AdminLayoutComponent } from './features/admin/admin-layout.component';
 
 export const routes: Routes = [
   {
@@ -22,57 +23,54 @@ export const routes: Routes = [
   },
   {
     path: 'admin',
-    loadComponent: () => import('./features/admin/admin-dashboard.component').then(m => m.AdminDashboardComponent),
-    canActivate: [authGuard]
-  },
-  {
-    path: 'admin/usuarios',
-    loadComponent: () => import('./features/admin/user-list/user-list.component').then(m => m.UserListComponent),
-    canActivate: [authGuard]
-  },
-  {
-    path: 'admin/usuarios/novo',
-    loadComponent: () => import('./features/admin/user-register/user-register.component').then(m => m.UserRegisterComponent),
-    canActivate: [authGuard]
-  },
-  {
-    path: 'admin/provedores/detalhes',
-    loadComponent: () => import('./features/admin/provider-details/provider-details.component').then(m => m.ProviderDetailsComponent),
-    canActivate: [authGuard]
-  },
-  {
-    path: 'admin/provedores/novo',
-    loadComponent: () => import('./features/admin/provider-register/provider-register.component').then(m => m.ProviderRegisterComponent),
-    canActivate: [authGuard]
-  },
-  {
-    path: 'admin/clientes',
-    loadComponent: () => import('./features/admin/client-list/client-list.component').then(m => m.ClientListComponent),
-    canActivate: [authGuard]
-  },
-  {
-    path: 'admin/clientes/novo',
-    loadComponent: () => import('./features/admin/client-register/client-register.component').then(m => m.ClientRegisterComponent),
-    canActivate: [authGuard]
+    component: AdminLayoutComponent,
+    canActivate: [authGuard],
+    children: [
+      {
+        path: '',
+        loadComponent: () => import('./features/admin/admin-dashboard.component').then(m => m.AdminDashboardComponent)
+      },
+      {
+        path: 'usuarios',
+        loadComponent: () => import('./features/admin/user-list/user-list.component').then(m => m.UserListComponent)
+      },
+      {
+        path: 'usuarios/novo',
+        loadComponent: () => import('./features/admin/user-register/user-register.component').then(m => m.UserRegisterComponent)
+      },
+      {
+        path: 'provedores/detalhes',
+        loadComponent: () => import('./features/admin/provider-details/provider-details.component').then(m => m.ProviderDetailsComponent)
+      },
+      {
+        path: 'provedores/novo',
+        loadComponent: () => import('./features/admin/provider-register/provider-register.component').then(m => m.ProviderRegisterComponent)
+      },
+      {
+        path: 'clientes',
+        loadComponent: () => import('./features/admin/client-list/client-list.component').then(m => m.ClientListComponent)
+      },
+      {
+        path: 'clientes/novo',
+        loadComponent: () => import('./features/admin/client-register/client-register.component').then(m => m.ClientRegisterComponent)
+      },
+      {
+        path: 'projetos',
+        loadComponent: () => import('./features/admin/project-list/project-list.component').then(m => m.ProjectListComponent)
+      },
+      {
+        path: 'projetos/novo',
+        loadComponent: () => import('./features/admin/project-register/project-register.component').then(m => m.ProjectRegisterComponent)
+      },
+      {
+        path: 'logs-email',
+        loadComponent: () => import('./features/admin/email-audit-list/email-audit-list.component').then(m => m.EmailAuditListComponent)
+      }
+    ]
   },
   {
     path: 'minha-conta',
     loadComponent: () => import('./features/account/account-management.component').then(m => m.AccountManagementComponent),
-    canActivate: [authGuard]
-  },
-  {
-    path: 'admin/projetos',
-    loadComponent: () => import('./features/admin/project-list/project-list.component').then(m => m.ProjectListComponent),
-    canActivate: [authGuard]
-  },
-  {
-    path: 'admin/projetos/novo',
-    loadComponent: () => import('./features/admin/project-register/project-register.component').then(m => m.ProjectRegisterComponent),
-    canActivate: [authGuard]
-  },
-  {
-    path: 'admin/logs-email',
-    loadComponent: () => import('./features/admin/email-audit-list/email-audit-list.component').then(m => m.EmailAuditListComponent),
     canActivate: [authGuard]
   },
   {
