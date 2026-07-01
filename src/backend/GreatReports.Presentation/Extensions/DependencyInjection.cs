@@ -16,10 +16,29 @@ public static class DependencyInjection
     {
         services.AddControllers();
         services.AddOpenApi();
+        services.AddCorsSettings(configuration);
+
 
         // Chain register downstream layers
         services.AddApplication()
                 .AddInfrastructure(configuration);
+
+        return services;
+    }
+
+    public static IServiceCollection AddCorsSettings(this IServiceCollection services, IConfiguration configuration)
+    {
+        var corsSettings = configuration.GetSection("CorsSettings").Get<CorsSettings>();
+
+        services.AddCors(options =>
+        {
+            options.AddPolicy("CorsPolicy", policy =>
+            {
+                policy.WithOrigins(corsSettings?.AllowedOrigins ?? ["http://localhost:4200"])
+                    .AllowAnyHeader()
+                    .AllowAnyMethod();
+            });
+        });
 
         return services;
     }
@@ -37,6 +56,7 @@ public static class DependencyInjection
             });
         }
 
+        app.UseCors("CorsPolicy");
         app.UseHttpsRedirection();
         app.UseAuthentication();
         app.UseAuthorization();

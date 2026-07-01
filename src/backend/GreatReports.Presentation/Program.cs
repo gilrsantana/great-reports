@@ -1,5 +1,6 @@
 using GreatReports.Presentation.Extensions;
 using GreatReports.Presentation.Middlewares;
+using GreatReports.Infrastructure.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
 
